@@ -1,0 +1,1 @@
+[H]O[C-]([C-]([H])n1c2c([H])c([H])c([H])c([H])c2c2c([H])c([H])c([H])c([H])c21)C([H])([H])Oc1c([H])c([H])c([H])c([H])c1[H]	[H]O[C-]([C-]([H])N1C2=C([H])C([H])=C([H])C([H])=C2C2=C([H])C([H])=C([H])C([H])=C21)C([H])([H])OC1=C([H])C([H])=C([H])C([H])=C1[H]

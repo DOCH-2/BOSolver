@@ -1,0 +1,3 @@
+Original: [H]c1c(C([H])([H])[H])c([H])[c-]([H])c1[H]
+ACtoBO: [H]c1c([H])c(C([H])([H])[H])[c-]([H])c1[H]
+
