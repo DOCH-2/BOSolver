@@ -1,199 +1,300 @@
-from gurobipy import *
+from typing import List, Dict, Tuple
+
+from gurobipy import GRB, Model, LinExpr
 from acerxn import chem
 import numpy as np
 
 
-def get_lists(molecule):
+def get_lists(molecule: chem.Molecule):
     period_list, group_list = molecule.get_period_group_list()
-    adj_matrix = np.copy(molecule.get_matrix('adj'))
+    adj_matrix = np.copy(molecule.get_matrix("adj"))
     adj_list = np.sum(adj_matrix, axis=1)
+
+    new_adj = np.copy(adj_matrix)
+    new_adj[np.tril_indices_from(new_adj)] = 0
+    neighbor_index = np.nonzero(new_adj)
+
+    reduced_neighbor_dict = {}
+    for i, k in enumerate(neighbor_index[0]):
+        if k not in reduced_neighbor_dict:
+            reduced_neighbor_dict[k] = [neighbor_index[1][i]]
+        else:
+            reduced_neighbor_dict[k].append(neighbor_index[1][i])
+
     ve_list = np.zeros_like(group_list)
     z_list = molecule.get_z_list()
     for i in range(len(group_list)):
         if period_list[i] == 1:
-            ve_list[i] = group_list[i]
+            ve_list[i] = 2
         else:
-            ve_list[i] = 4
-        if adj_list[i] > ve_list[i]:
-            ve_list[i] = group_list[i]
-    return period_list, group_list, z_list, ve_list, adj_list, molecule.get_bond_list(False)
+            # not considering expanded octet here
+            ve_list[i] = 8
+
+    bond_list = molecule.get_bond_list(False)
+    bond_mapping = {key: val for val, key in enumerate(bond_list)}
+    neighbor_list = molecule.get_neighbor_list()
+    return (
+        period_list,
+        group_list,
+        z_list,
+        ve_list,
+        adj_list,
+        bond_list,
+        bond_mapping,
+        neighbor_list,
+    )
 
 
-def maximize_bo(molecule, chg_mol, mode):
-    period_list, group_list, z_list, ve_list, adj_list, bond_list = get_lists(molecule)
-    atom_num, bond_num = len(z_list), len(bond_list)
+def get_extended_lists(period_list, ve_list, chg_list):
+    extended_idx = period_list > 2
 
-    if atom_num == 1:
-        return np.array([chg_mol]), {}
-    multiplicity = (np.sum(z_list)-chg_mol)%2+1
+    eve_list = np.copy(ve_list)
+    eve_list[extended_idx] += 2*np.where(chg_list > 0, chg_list, 0)[extended_idx]
+    print("ve_list", ve_list, len(ve_list))
+    print("eve_list", eve_list, len(eve_list))
 
-    model = Model('maximize_bo')
-    bo = model.addVars(bond_num, name='bo', vtype=GRB.INTEGER)
-    #chg = model.addVars(atom_num, lb=-np.inf, name='chg', vtype=GRB.INTEGER)
-    t1 = model.addVars(2*atom_num, name='t1', vtype=GRB.INTEGER)
-    if mode == 'heuristics':
-        t2 = model.addVars(2*atom_num, name='t2', vtype=GRB.CONTINUOUS)
-    if multiplicity == 1:
-        lp = model.addVars(atom_num, name='lp', vtype=GRB.INTEGER)
- 
-    for i in range(bond_num):
-        p, q = bond_list[i]
-        model.addConstr(bo[i] <= min([ve_list[p]-adj_list[p], ve_list[q]-adj_list[q], 2]))
+    return eve_list
 
-    constr = LinExpr()
-    for i in range(atom_num):
-        constr1 = LinExpr()
-        constr2 = LinExpr(t1[2*i+1]-t1[2*i])
-        constr3 = LinExpr(t1[2*i]-t1[2*i+1])
-        if multiplicity == 1:
-            constr4 = LinExpr(t1[2*i]-t1[2*i+1]+2*lp[i])
-        constr.add(t1[2*i]-t1[2*i+1])
-        for j in range(bond_num):
-            if i in bond_list[j]:
-                constr1.add(bo[j])
-                constr2.add(bo[j])
-                constr3.add(bo[j])    
-                if multiplicity == 1:
-                    constr4.add(bo[j])
-        #model.addConstr(t1[2*i]-t1[2*i+1] == chg[i])
-        if mode == 'heuristics':
-            model.addConstr(t2[2*i]-t2[2*i+1] == (t1[2*i]-t1[2*i+1])+0.1*group_list[i]-0.4)
-        model.addConstr(constr2 <= 2*ve_list[i]-adj_list[i]-group_list[i])
-        model.addConstr(constr3 <= group_list[i]-adj_list[i])
-        if multiplicity == 1:
-            model.addConstr(constr4 == group_list[i]-adj_list[i])
-    model.addConstr(constr == chg_mol)
 
-    objective1 = LinExpr()
-    objective2 = LinExpr()
-    objective3 = LinExpr()
-    for i in range(bond_num):
-        objective1.add(bo[i])
-    for i in range(atom_num):
-        objective2.add(t1[2*i]+t1[2*i+1])
-        if mode == 'heuristics':
-            objective3.add((0.1*group_list[i]+0.6)*(t2[2*i]+t2[2*i+1]))
-    model.setObjectiveN(objective1, 0, 2, GRB.MAXIMIZE)
-    model.setObjectiveN(objective2, 1, 1, GRB.MINIMIZE)
-    if mode == 'heuristics':
-        model.setObjectiveN(objective3, 2, 0, GRB.MINIMIZE)
-    model.setParam(GRB.Param.OutputFlag, 0)
-    model.setParam(GRB.Param.TimeLimit, 1)
-    model.optimize()
-
-    if model.status != GRB.Status.OPTIMAL:
-        return None, None
-
-    bo_dict = {}
-    chg_list = np.zeros(atom_num)
-    for i in range(bond_num):
-        bo_dict[bond_list[i]] = int(model.getVarByName('bo[{0}]'.format(i)).Xn)
-    for i in range(atom_num):
-        chg_list[i] = int(model.getVarByName('t1[{0}]'.format(2*i)).Xn)-int(model.getVarByName('t1[{0}]'.format(2*i+1)).Xn)
-    
-    return chg_list, bo_dict
- 
-
-def resolve_chg(molecule, chg_list, bo_dict, chg_mol, mode):
-    period_list, group_list, z_list, ve_list, adj_list, bond_list = get_lists(molecule)
-    atom_num, bond_num = len(z_list), len(bond_list)
-
+def maximize_bo(
+    atom_num,
+    bond_num,
+    group_list,
+    bond_list,
+    bond_mapping,
+    ve_list,
+    neighbor_list,
+    chg_mol,
+    mode,
+):
+    # early stop
     if atom_num == 1:
         return np.array([chg_mol]), {}
 
-    multiplicity = (np.sum(z_list)-chg_mol)%2+1
-    
+    ### model construction
+    model = Model("maximize_bo")
+
+    # bo: bond order
+    bo = model.addVars(bond_num, lb=1, name="bo", vtype=GRB.INTEGER)
+
+    # t1: formal charge
+    # t1[2i]: fc+ | t1[2i+1]: fc-
+    # t1[2i] - t1[2i+1] : fc of atom i
+    # t1[2i] + t1[2i+1] : abs(fc) of atom i
+    t1 = model.addVars(2 * atom_num, lb=0, name="t1", vtype=GRB.INTEGER)
+    # t2: formal charge for weighted objective function
+    # weight considering electronegativity
+    # t2 = model.addVars(2 * atom_num, name="t2", vtype=GRB.CONTINUOUS)
+
+    ### constraints construction
+    chg_constr = LinExpr()  # charge conservation rule
     for i in range(atom_num):
-        if (period_list[i] > 2 and group_list[i] > 4 and chg_list[i] > 0) or (group_list[i] < 4 and chg_list[i] < 0):
-            ve_list[i] += chg_list[i]
+        lp_constr = LinExpr()  # lone pair rule
+        ve_constr = LinExpr()  # valence rule
 
-    model = Model('resolve_chg')
-    bo = model.addVars(bond_num, name='bo', vtype=GRB.INTEGER)
-    #chg = model.addVars(atom_num, lb=-np.inf, name='chg', vtype=GRB.INTEGER)
-    t1 = model.addVars(2*atom_num, name='t1', vtype=GRB.INTEGER)
-    if mode == 'heuristics':
-        t2 = model.addVars(2*atom_num, name='t2', vtype=GRB.CONTINUOUS)
-    octet = model.addVars(atom_num, name='octet', vtype=GRB.INTEGER)
-    if multiplicity == 1:
-        lp = model.addVars(atom_num, name='lp', vtype=GRB.INTEGER)
+        chg_constr.add(t1[2 * i] - t1[2 * i + 1])
+        lp_constr.add(t1[2 * i] - t1[2 * i + 1])
+        ve_constr.add(-t1[2 * i] + t1[2 * i + 1])
 
+        # summation over bond
+        for j in neighbor_list[i]:
+            a, b = i, j
+            if a > b:
+                a, b = b, a
+            lp_constr.add(bo[bond_mapping[(a, b)]])
+            ve_constr.add(bo[bond_mapping[(a, b)]])
+
+        model.addConstr(lp_constr <= group_list[i], name=f"lp_{i}")
+        model.addConstr(ve_constr <= ve_list[i] - group_list[i], name=f"ve_{i}")
+    model.addConstr(chg_constr == chg_mol, name="chg_consv")
+
+    ### optimization
+    max_bo_obj = LinExpr()  # bond maximization
+    min_fc_obj = LinExpr()  # formal charge minimization
+    # min_wfc_obj = LinExpr()  # formal charge minimization (weighted)
+
+    # bond maximization
     for i in range(bond_num):
-        p, q = bond_list[i]
-        model.addConstr(bo[i] <= min([ve_list[p]-adj_list[p], ve_list[q]-adj_list[q], 2]))
-
-    constr = LinExpr()
+        max_bo_obj.add(bo[i])
+    # (weighted) formal charge minimization
     for i in range(atom_num):
-        constr1 = LinExpr()
-        constr2 = LinExpr(t1[2*i+1]-t1[2*i])
-        constr3 = LinExpr(t1[2*i]-t1[2*i+1])
-        if multiplicity == 1:
-            constr4 = LinExpr(t1[2*i]-t1[2*i+1]+2*lp[i])
-        #constr5 = LinExpr(t1[2*i+1]-t1[2*i]+octet[i])
-        constr.add(t1[2*i]-t1[2*i+1])
-        for j in range(bond_num):
-            if i in bond_list[j]:
-                constr1.add(bo[j])
-                constr2.add(bo[j])
-                constr3.add(bo[j])
-                if multiplicity == 1:
-                    constr4.add(bo[j])
-                #constr5.add(bo[j])
-        #model.addConstr(t1[2*i]-t1[2*i+1] == chg[i])
-        if mode == 'heuristics':
-            model.addConstr(t2[2*i]-t2[2*i+1] == (t1[2*i]-t1[2*i+1])+0.1*group_list[i]-0.4)
-        model.addConstr(constr2 <= (2*ve_list[i]-adj_list[i]-group_list[i]))
-        model.addConstr(constr3 <= group_list[i]-adj_list[i])
-        if multiplicity == 1:
-            model.addConstr(constr4 == group_list[i]-adj_list[i])
-        #if ve_list[i] <= 4:
-        #    model.addConstr(constr5 == (2*ve_list[i]-adj_list[i]-group_list[i]))
-    model.addConstr(constr == chg_mol)
+        min_fc_obj.add(t1[2 * i] + t1[2 * i + 1])
+        # min_wfc_obj.add((0.1 * group_list[i] + 0.6) * (t2[2 * i] + t2[2 * i + 1]))
 
-    objective1 = LinExpr()
-    objective2 = LinExpr()
-    objective3 = LinExpr()
-    for i in range(atom_num):
-        #objective1.add((2*ve_list[i]-group_list[i]-(t1[2*i]-t1[2*i+1])-3*adj_list[i])/2)
-        objective2.add(3*(t1[2*i]+t1[2*i+1]))
-        if mode == 'heuristics':
-            objective3.add((0.1*group_list[i]+0.6)*(t2[2*i]+t2[2*i+1]))
-    for i in range(bond_num):
-        #objective1.add(-3*bo[i])
-        objective2.add(-bo[i])
-    #model.setObjectiveN(objective1, 0, 2, GRB.MINIMIZE)
-    model.setObjectiveN(objective2, 1, 1, GRB.MINIMIZE)
-    if mode == 'heuristics':
-        model.setObjectiveN(objective3, 2, 0, GRB.MINIMIZE)
-    model.setParam(GRB.Param.OutputFlag, 0)
+    model.setObjectiveN(max_bo_obj, 0, priority=2, weight=GRB.MAXIMIZE, name="max_bo")
+    model.setObjectiveN(min_fc_obj, 1, priority=1, weight=GRB.MINIMIZE, name="min_fc")
+    # if mode == "heuristics":
+    #    model.setObjectiveN(min_wfc_obj, 2, 0, GRB.MINIMIZE)
+
+    # Gurobi optimization
+    # model.setParam(GRB.Param.OutputFlag, 0)
     model.setParam(GRB.Param.TimeLimit, 1)
-    #model.write('record.lp')
+    model.write("record.lp")
+
     model.optimize()
 
+    # error handling
     if model.status != GRB.Status.OPTIMAL:
-        return None, None
+        return np.zeros(atom_num), {}
 
+    # result record
+    nSol = model.SolCount
+    print("nSol", nSol)
+    for s in range(nSol):
+        model.params.SolutionNumber = s
+        model.write(f"output{s}.sol")
+
+    # retrieval
     bo_dict = {}
-    chg_list = np.zeros(atom_num)
-    lp_list = np.zeros(atom_num)
+    chg_list = np.zeros(atom_num, dtype=np.int64)
     for i in range(bond_num):
-        bo_dict[bond_list[i]] = int(model.getVarByName('bo[{0}]'.format(i)).Xn)
+        bo_dict[bond_list[i]] = int(bo[i].X)
     for i in range(atom_num):
-        chg_list[i] = int(model.getVarByName('t1[{0}]'.format(2*i)).Xn)-int(model.getVarByName('t1[{0}]'.format(2*i+1)).Xn)
-    for i in range(atom_num):
-        lp_list[i] = int(model.getVarByName('lp[{0}]'.format(i)).Xn)
+        chg_list[i] = int(t1[2 * i].X) - int(t1[2 * i + 1].X)
 
     return chg_list, bo_dict
 
 
-def compute_chg_and_bo(molecule, chg_mol, resolve=True, mode='heuristics'):
-    bo_matrix = np.copy(molecule.get_adj_matrix())
-    chg_list, bo_dict = maximize_bo(molecule, chg_mol, mode)
-    if not chg_list is None:
-        if resolve:
-            chg_list, bo_dict = resolve_chg(molecule, chg_list, bo_dict, chg_mol, mode)
-        if not chg_list is None:
-            for p, q in bo_dict.keys():
-                bo_matrix[p][q] += bo_dict[(p, q)]
-                bo_matrix[q][p] += bo_dict[(p, q)]
-    
-    return chg_list, bo_matrix
+def resolve_chg(
+    atom_num,
+    bond_num,
+    group_list,
+    bond_list,
+    bond_mapping,
+    eve_list,
+    neighbor_list,
+    chg_mol,
+    mode,
+):
+    if atom_num == 1:
+        return np.array([chg_mol]), {}
+
+    model = Model("resolve_chg")
+
+    # bo: bond order
+    bo = model.addVars(bond_num, lb=1, name="bo", vtype=GRB.INTEGER)
+
+    # t1: formal charge
+    t1 = model.addVars(2 * atom_num, lb=0, name="t1", vtype=GRB.INTEGER)
+    # t2: formal charge for weighted objective function
+    # weight considering electronegativity
+    # t2 = model.addVars(2 * atom_num, name="t2", vtype=GRB.CONTINUOUS)
+
+    ### constraints construction
+    chg_constr = LinExpr()  # charge conservation rule
+    for i in range(atom_num):
+        lp_constr = LinExpr()  # lone pair rule
+        eve_constr = LinExpr()  # extended valence rule
+
+        chg_constr.add(t1[2 * i] - t1[2 * i + 1])
+        lp_constr.add(t1[2 * i] - t1[2 * i + 1])
+        eve_constr.add(-t1[2 * i] + t1[2 * i + 1])
+
+        # summation over bond
+        for j in neighbor_list[i]:
+            a, b = i, j
+            if a > b:
+                a, b = b, a
+            lp_constr.add(bo[bond_mapping[(a, b)]])
+            eve_constr.add(bo[bond_mapping[(a, b)]])
+
+        model.addConstr(lp_constr <= group_list[i], name=f"lp_{i}")
+        model.addConstr(eve_constr <= eve_list[i] - group_list[i], name=f"eve_{i}")
+    model.addConstr(chg_constr == chg_mol, name="chg_consv")
+
+    ### optimization
+    obj = LinExpr()  # charge separation min & bond max
+
+    # bond maximization
+    for i in range(bond_num):
+        obj.add(-2 * bo[i])
+    # formal charge separation minimization
+    for i in range(atom_num):
+        obj.add(3 * t1[2 * i] + 3 * t1[2 * i + 1])
+
+    model.setObjective(obj, GRB.MINIMIZE)
+
+    # Gurobi optimization
+    # model.setParam(GRB.Param.OutputFlag, 0)
+    model.setParam(GRB.Param.TimeLimit, 1)
+    model.write("record_chg.lp")
+
+    model.optimize()
+
+    # error handling
+    if model.status != GRB.Status.OPTIMAL:
+        return np.zeros(atom_num), {}
+
+    # result record
+    nSol = model.SolCount
+    print("nSol", nSol)
+    for s in range(nSol):
+        model.params.SolutionNumber = s
+        model.write(f"output_chg{s}.sol")
+
+    # retrieval
+    bo_dict = {}
+    chg_list = np.zeros(atom_num)
+    for i in range(bond_num):
+        bo_dict[bond_list[i]] = int(bo[i].X)
+    for i in range(atom_num):
+        chg_list[i] = int(t1[2 * i].X) - int(t1[2 * i + 1].X)
+    return chg_list, bo_dict
+
+
+def compute_chg_and_bo(molecule, chg_mol, resolve=True, mode="heuristics"):
+    (
+        period_list,
+        group_list,
+        z_list,
+        ve_list,
+        adj_list,
+        bond_list,
+        bond_mapping,
+        neighbor_list,
+    ) = get_lists(molecule)
+    atom_num, bond_num = len(z_list), len(bond_list)
+
+    chg_list, bo_dict = maximize_bo(
+        atom_num,
+        bond_num,
+        group_list,
+        bond_list,
+        bond_mapping,
+        ve_list,
+        neighbor_list,
+        chg_mol,
+        mode,
+    )
+    # early stop
+    if len(bo_dict) == 0:
+        return None, None, None, None
+
+    bo_matrix = np.zeros((atom_num, atom_num))
+    for p, q in bo_dict.keys():
+        bo_matrix[p][q] = bo_dict[(p, q)]
+        bo_matrix[q][p] = bo_dict[(p, q)]
+
+    # charge resolution
+    if resolve:
+        eve_list = get_extended_lists(period_list, ve_list, chg_list)
+        new_chg_list, new_bo_dict = resolve_chg(
+            atom_num,
+            bond_num,
+            group_list,
+            bond_list,
+            bond_mapping,
+            eve_list,
+            neighbor_list,
+            chg_mol,
+            mode,
+        )
+    else:
+        return chg_list, bo_matrix, None, None
+
+    bo_matrix2 = np.zeros((atom_num, atom_num))
+    for p, q in new_bo_dict.keys():
+        bo_matrix2[p][q] = new_bo_dict[(p, q)]
+        bo_matrix2[q][p] = new_bo_dict[(p, q)]
+
+    return chg_list, bo_matrix, new_chg_list, bo_matrix2
