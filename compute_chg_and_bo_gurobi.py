@@ -46,12 +46,9 @@ def get_lists(molecule: chem.Molecule):
 
 
 def get_extended_lists(period_list, ve_list, chg_list):
-    extended_idx = period_list > 2
-
+    expanded_idx = period_list > 2
     eve_list = np.copy(ve_list)
-    eve_list[extended_idx] += 2*np.where(chg_list > 0, chg_list, 0)[extended_idx]
-    print("ve_list", ve_list, len(ve_list))
-    print("eve_list", eve_list, len(eve_list))
+    eve_list[expanded_idx] += 2*np.where(chg_list > 0, chg_list, 0)[expanded_idx]
 
     return eve_list
 
@@ -65,7 +62,7 @@ def maximize_bo(
     ve_list,
     neighbor_list,
     chg_mol,
-    mode,
+    eIsEven,
 ):
     # early stop
     if atom_num == 1:
@@ -82,9 +79,13 @@ def maximize_bo(
     # t1[2i] - t1[2i+1] : fc of atom i
     # t1[2i] + t1[2i+1] : abs(fc) of atom i
     t1 = model.addVars(2 * atom_num, lb=0, name="t1", vtype=GRB.INTEGER)
+    
     # t2: formal charge for weighted objective function
     # weight considering electronegativity
     # t2 = model.addVars(2 * atom_num, name="t2", vtype=GRB.CONTINUOUS)
+    
+    # even: dummy variable to force no. of electrons even
+    even = model.addVars(atom_num, name="even", vtype=GRB.INTEGER)
 
     ### constraints construction
     chg_constr = LinExpr()  # charge conservation rule
@@ -104,8 +105,14 @@ def maximize_bo(
             lp_constr.add(bo[bond_mapping[(a, b)]])
             ve_constr.add(bo[bond_mapping[(a, b)]])
 
+
         model.addConstr(lp_constr <= group_list[i], name=f"lp_{i}")
-        model.addConstr(ve_constr <= ve_list[i] - group_list[i], name=f"ve_{i}")
+        
+        # the number of valence electron is less than maximum valence
+        model.addConstr(ve_constr + group_list[i] <= ve_list[i] , name=f"ve_{i}")
+        if eIsEven:
+            # the number of valence electron is even number (no radical rule!)
+            model.addConstr(ve_constr + group_list[i] == 2*even[i], name=f"noRad_{i}") 
     model.addConstr(chg_constr == chg_mol, name="chg_consv")
 
     ### optimization
@@ -127,7 +134,7 @@ def maximize_bo(
     #    model.setObjectiveN(min_wfc_obj, 2, 0, GRB.MINIMIZE)
 
     # Gurobi optimization
-    # model.setParam(GRB.Param.OutputFlag, 0)
+    model.setParam(GRB.Param.OutputFlag, 0)
     model.setParam(GRB.Param.TimeLimit, 1)
     model.write("record.lp")
 
@@ -139,7 +146,7 @@ def maximize_bo(
 
     # result record
     nSol = model.SolCount
-    print("nSol", nSol)
+    #print("nSol", nSol)
     for s in range(nSol):
         model.params.SolutionNumber = s
         model.write(f"output{s}.sol")
@@ -164,7 +171,9 @@ def resolve_chg(
     eve_list,
     neighbor_list,
     chg_mol,
-    mode,
+    eIsEven,
+    alreadyOctet,
+    mode
 ):
     if atom_num == 1:
         return np.array([chg_mol]), {}
@@ -179,12 +188,17 @@ def resolve_chg(
     # t2: formal charge for weighted objective function
     # weight considering electronegativity
     # t2 = model.addVars(2 * atom_num, name="t2", vtype=GRB.CONTINUOUS)
+    
+    # even: dummy variable to force no. of electrons even
+    even = model.addVars(atom_num, name="even", vtype=GRB.INTEGER)
 
     ### constraints construction
     chg_constr = LinExpr()  # charge conservation rule
+    octet_constr = LinExpr() #
+    
     for i in range(atom_num):
         lp_constr = LinExpr()  # lone pair rule
-        eve_constr = LinExpr()  # extended valence rule
+        eve_constr = LinExpr()  # expanded valence rule
 
         chg_constr.add(t1[2 * i] - t1[2 * i + 1])
         lp_constr.add(t1[2 * i] - t1[2 * i + 1])
@@ -199,7 +213,15 @@ def resolve_chg(
             eve_constr.add(bo[bond_mapping[(a, b)]])
 
         model.addConstr(lp_constr <= group_list[i], name=f"lp_{i}")
-        model.addConstr(eve_constr <= eve_list[i] - group_list[i], name=f"eve_{i}")
+        if bool(alreadyOctet[i]):
+            model.addConstr(eve_constr + group_list[i] == 8, name=f"eve_{i}")
+        else:
+            model.addConstr(eve_constr <= eve_list[i] - group_list[i], name=f"eve_{i}")
+        
+        if eIsEven:
+            # the number of valence electron is even number (no radical rule!)
+            model.addConstr(eve_constr + group_list[i] == 2*even[i], name=f"noRad_{i}") 
+            
     model.addConstr(chg_constr == chg_mol, name="chg_consv")
 
     ### optimization
@@ -215,7 +237,7 @@ def resolve_chg(
     model.setObjective(obj, GRB.MINIMIZE)
 
     # Gurobi optimization
-    # model.setParam(GRB.Param.OutputFlag, 0)
+    model.setParam(GRB.Param.OutputFlag, 0)
     model.setParam(GRB.Param.TimeLimit, 1)
     model.write("record_chg.lp")
 
@@ -227,7 +249,7 @@ def resolve_chg(
 
     # result record
     nSol = model.SolCount
-    print("nSol", nSol)
+    #print("nSol", nSol)
     for s in range(nSol):
         model.params.SolutionNumber = s
         model.write(f"output_chg{s}.sol")
@@ -239,10 +261,10 @@ def resolve_chg(
         bo_dict[bond_list[i]] = int(bo[i].X)
     for i in range(atom_num):
         chg_list[i] = int(t1[2 * i].X) - int(t1[2 * i + 1].X)
+        
     return chg_list, bo_dict
 
-
-def compute_chg_and_bo(molecule, chg_mol, resolve=True, mode="heuristics"):
+def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, mode="heuristics"):
     (
         period_list,
         group_list,
@@ -254,6 +276,7 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=True, mode="heuristics"):
         neighbor_list,
     ) = get_lists(molecule)
     atom_num, bond_num = len(z_list), len(bond_list)
+    eIsEven = int(np.sum(z_list) - chg_mol) %2 == 0
 
     chg_list, bo_dict = maximize_bo(
         atom_num,
@@ -264,7 +287,7 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=True, mode="heuristics"):
         ve_list,
         neighbor_list,
         chg_mol,
-        mode,
+        eIsEven
     )
     # early stop
     if len(bo_dict) == 0:
@@ -277,6 +300,12 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=True, mode="heuristics"):
 
     # charge resolution
     if resolve:
+        bo_sum = np.zeros(atom_num)
+        for p, q in bo_dict.keys():
+            bo_sum[p] += bo_dict[(p,q)]
+            bo_sum[q] += bo_dict[(p,q)]
+        alreadyOctet = (group_list + bo_sum - chg_list == 8) & (period_list == 2)
+        print("alreadyOctet", np.nonzero(alreadyOctet))
         eve_list = get_extended_lists(period_list, ve_list, chg_list)
         new_chg_list, new_bo_dict = resolve_chg(
             atom_num,
@@ -287,7 +316,9 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=True, mode="heuristics"):
             eve_list,
             neighbor_list,
             chg_mol,
-            mode,
+            eIsEven,
+            alreadyOctet,
+            mode
         )
     else:
         return chg_list, bo_matrix, None, None
@@ -298,3 +329,66 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=True, mode="heuristics"):
         bo_matrix2[q][p] = new_bo_dict[(p, q)]
 
     return chg_list, bo_matrix, new_chg_list, bo_matrix2
+
+def compute_chg_and_bo(molecule, chg_mol, resolve=True, mode="heuristics"):
+    (
+        period_list,
+        group_list,
+        z_list,
+        ve_list,
+        adj_list,
+        bond_list,
+        bond_mapping,
+        neighbor_list,
+    ) = get_lists(molecule)
+    
+    atom_num, bond_num = len(z_list), len(bond_list)
+    eIsEven = int(np.sum(z_list) - chg_mol) %2 == 0
+
+    chg_list, bo_dict = maximize_bo(
+        atom_num,
+        bond_num,
+        group_list,
+        bond_list,
+        bond_mapping,
+        ve_list,
+        neighbor_list,
+        chg_mol,
+        eIsEven
+    )
+    # early stop
+    if len(bo_dict) == 0:
+        return None, None
+
+    # charge resolution
+    if resolve:
+        bo_sum = np.zeros(atom_num)
+        for p, q in bo_dict.keys():
+            bo_sum[p] += bo_dict[(p,q)]
+            bo_sum[q] += bo_dict[(p,q)]
+        alreadyOctet = (group_list + bo_sum - chg_list == 8) & (period_list == 2)
+        eve_list = get_extended_lists(period_list, ve_list, chg_list)
+        chg_list, bo_dict = resolve_chg(
+            atom_num,
+            bond_num,
+            group_list,
+            bond_list,
+            bond_mapping,
+            eve_list,
+            neighbor_list,
+            chg_mol,
+            eIsEven,
+            alreadyOctet,
+            mode
+        )
+        
+        # error handling
+        if len(bo_dict) == 0:
+            return None, None
+    
+    bo_matrix = np.zeros((atom_num, atom_num))
+    for p, q in bo_dict.keys():
+        bo_matrix[p][q] = bo_dict[(p, q)]
+        bo_matrix[q][p] = bo_dict[(p, q)]
+
+    return chg_list, bo_matrix
