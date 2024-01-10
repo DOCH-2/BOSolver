@@ -110,6 +110,7 @@ def maximize_bo(
         
         # the number of valence electron is less than maximum valence
         model.addConstr(ve_constr + group_list[i] <= ve_list[i] , name=f"ve_{i}")
+        
         if eIsEven:
             # the number of valence electron is even number (no radical rule!)
             model.addConstr(ve_constr + group_list[i] == 2*even[i], name=f"noRad_{i}") 
@@ -172,8 +173,7 @@ def resolve_chg(
     neighbor_list,
     chg_mol,
     eIsEven,
-    alreadyOctet,
-    mode
+    alreadyOctet
 ):
     if atom_num == 1:
         return np.array([chg_mol]), {}
@@ -264,7 +264,7 @@ def resolve_chg(
         
     return chg_list, bo_dict
 
-def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, mode="heuristics"):
+def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True):
     (
         period_list,
         group_list,
@@ -297,9 +297,12 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, mode="heuristics")
     for p, q in bo_dict.keys():
         bo_matrix[p][q] = bo_dict[(p, q)]
         bo_matrix[q][p] = bo_dict[(p, q)]
-
+    
+    # check charge separation
+    chg_sep = np.any(chg_list > 0) and np.any(chg_list < 0)
+    
     # charge resolution
-    if resolve:
+    if resolve and chg_sep:
         bo_sum = np.zeros(atom_num)
         for p, q in bo_dict.keys():
             bo_sum[p] += bo_dict[(p,q)]
@@ -317,11 +320,10 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, mode="heuristics")
             neighbor_list,
             chg_mol,
             eIsEven,
-            alreadyOctet,
-            mode
+            alreadyOctet
         )
     else:
-        return chg_list, bo_matrix, None, None
+        return chg_list, bo_matrix, chg_list, bo_matrix
 
     bo_matrix2 = np.zeros((atom_num, atom_num))
     for p, q in new_bo_dict.keys():
@@ -330,7 +332,7 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, mode="heuristics")
 
     return chg_list, bo_matrix, new_chg_list, bo_matrix2
 
-def compute_chg_and_bo(molecule, chg_mol, resolve=True, mode="heuristics"):
+def compute_chg_and_bo(molecule, chg_mol, resolve=True):
     (
         period_list,
         group_list,
@@ -378,8 +380,7 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=True, mode="heuristics"):
             neighbor_list,
             chg_mol,
             eIsEven,
-            alreadyOctet,
-            mode
+            alreadyOctet
         )
         
         # error handling
