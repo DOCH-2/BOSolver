@@ -60,8 +60,7 @@ def get_lists(molecule: chem.Molecule):
             ve_list[i] = 8
 
     # ring membership
-    ring_bond_list = get_ring_membership(bond_list)
-    ring_list = np.unique(ring_bond_list).astype(int)
+    ring_list = molecule.get_sssr()
     
     
     return (
@@ -78,8 +77,11 @@ def get_lists(molecule: chem.Molecule):
 
 
 def get_extended_lists(period_list, ve_list, chg_list, ring_list):
+    ring_members = np.unique(sum(ring_list, []))
+    print(ring_members)
+    
     in_ring = np.zeros_like(period_list)
-    in_ring[ring_list] = 1
+    in_ring[ring_members] = 1
     in_ring= in_ring.astype(bool)
     
     expanded_idx = (period_list > 2) & ~in_ring
@@ -399,9 +401,12 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=True):
     # early stop
     if len(bo_dict) == 0:
         return None, None
+    
+    # check charge separation
+    chg_sep = np.any(chg_list > 0) and np.any(chg_list < 0)
 
     # charge resolution
-    if resolve:
+    if resolve and chg_sep:
         bo_sum = np.zeros(atom_num)
         for p, q in bo_dict.keys():
             bo_sum[p] += bo_dict[(p,q)]
