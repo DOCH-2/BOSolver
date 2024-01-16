@@ -1,26 +1,55 @@
 from typing import List, Dict, Tuple
 
 from gurobipy import GRB, Model, LinExpr
-from acerxn import chem
+from acerxn import chem, process
 import numpy as np
 
 
+def find_terminals(bonds: list):
+    valence = dict()
+    for bond in bonds:
+        s, e = bond
+        if s in valence:
+            valence[s] += 1
+        else:
+            valence[s] = 1
+        if e in valence:
+            valence[e] += 1
+        else:
+            valence[e] = 1
+    terminal_indices = []
+    for index in valence:
+        if valence[index] == 1:
+            terminal_indices.append(index)
+    return terminal_indices    
+
+def get_ring_membership(bonds: list):
+    terminal_indices = []
+    check_bonds = bonds.copy()
+    terminal_indices = find_terminals(bonds)
+    while len(terminal_indices) > 0:
+        terminal_indices = find_terminals(check_bonds)
+        index = 0
+        while index < len(check_bonds):
+            s, e = check_bonds[index]
+            if s in terminal_indices or e in terminal_indices:
+                del(check_bonds[index])
+            else:
+                index += 1
+    return check_bonds    
+
 def get_lists(molecule: chem.Molecule):
+    # period, group, adj
     period_list, group_list = molecule.get_period_group_list()
     adj_matrix = np.copy(molecule.get_matrix("adj"))
     adj_list = np.sum(adj_matrix, axis=1)
+    
+    # neighbor, bond, bond mapping
+    neighbor_list = molecule.get_neighbor_list()
+    bond_list = molecule.get_bond_list(False)
+    bond_mapping = {key: val for val, key in enumerate(bond_list)}
 
-    new_adj = np.copy(adj_matrix)
-    new_adj[np.tril_indices_from(new_adj)] = 0
-    neighbor_index = np.nonzero(new_adj)
-
-    reduced_neighbor_dict = {}
-    for i, k in enumerate(neighbor_index[0]):
-        if k not in reduced_neighbor_dict:
-            reduced_neighbor_dict[k] = [neighbor_index[1][i]]
-        else:
-            reduced_neighbor_dict[k].append(neighbor_index[1][i])
-
+    # valence, atomic number
     ve_list = np.zeros_like(group_list)
     z_list = molecule.get_z_list()
     for i in range(len(group_list)):
@@ -30,9 +59,11 @@ def get_lists(molecule: chem.Molecule):
             # not considering expanded octet here
             ve_list[i] = 8
 
-    bond_list = molecule.get_bond_list(False)
-    bond_mapping = {key: val for val, key in enumerate(bond_list)}
-    neighbor_list = molecule.get_neighbor_list()
+    # ring membership
+    ring_bond_list = get_ring_membership(bond_list)
+    ring_list = np.unique(ring_bond_list).astype(int)
+    
+    
     return (
         period_list,
         group_list,
@@ -42,11 +73,16 @@ def get_lists(molecule: chem.Molecule):
         bond_list,
         bond_mapping,
         neighbor_list,
+        ring_list
     )
 
 
-def get_extended_lists(period_list, ve_list, chg_list):
-    expanded_idx = period_list > 2
+def get_extended_lists(period_list, ve_list, chg_list, ring_list):
+    in_ring = np.zeros_like(period_list)
+    in_ring[ring_list] = 1
+    in_ring= in_ring.astype(bool)
+    
+    expanded_idx = (period_list > 2) & ~in_ring
     eve_list = np.copy(ve_list)
     eve_list[expanded_idx] += 2*np.where(chg_list > 0, chg_list, 0)[expanded_idx]
 
@@ -274,6 +310,7 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True):
         bond_list,
         bond_mapping,
         neighbor_list,
+        ring_list
     ) = get_lists(molecule)
     atom_num, bond_num = len(z_list), len(bond_list)
     eIsEven = int(np.sum(z_list) - chg_mol) %2 == 0
@@ -309,7 +346,7 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True):
             bo_sum[q] += bo_dict[(p,q)]
         alreadyOctet = (group_list + bo_sum - chg_list == 8) & (period_list == 2)
         print("alreadyOctet", np.nonzero(alreadyOctet))
-        eve_list = get_extended_lists(period_list, ve_list, chg_list)
+        eve_list = get_extended_lists(period_list, ve_list, chg_list, ring_list)
         new_chg_list, new_bo_dict = resolve_chg(
             atom_num,
             bond_num,
@@ -342,6 +379,7 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=True):
         bond_list,
         bond_mapping,
         neighbor_list,
+        ring_list
     ) = get_lists(molecule)
     
     atom_num, bond_num = len(z_list), len(bond_list)
@@ -369,7 +407,7 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=True):
             bo_sum[p] += bo_dict[(p,q)]
             bo_sum[q] += bo_dict[(p,q)]
         alreadyOctet = (group_list + bo_sum - chg_list == 8) & (period_list == 2)
-        eve_list = get_extended_lists(period_list, ve_list, chg_list)
+        eve_list = get_extended_lists(period_list, ve_list, chg_list, ring_list)
         chg_list, bo_dict = resolve_chg(
             atom_num,
             bond_num,
