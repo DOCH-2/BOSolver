@@ -1,42 +1,24 @@
 from typing import List, Dict, Tuple
 
+from rdkit import Chem
+
 from gurobipy import GRB, Model, LinExpr
 from acerxn import chem, process
 import numpy as np
 
-
-def find_terminals(bonds: list):
-    valence = dict()
-    for bond in bonds:
-        s, e = bond
-        if s in valence:
-            valence[s] += 1
-        else:
-            valence[s] = 1
-        if e in valence:
-            valence[e] += 1
-        else:
-            valence[e] = 1
-    terminal_indices = []
-    for index in valence:
-        if valence[index] == 1:
-            terminal_indices.append(index)
-    return terminal_indices    
-
-def get_ring_membership(bonds: list):
-    terminal_indices = []
-    check_bonds = bonds.copy()
-    terminal_indices = find_terminals(bonds)
-    while len(terminal_indices) > 0:
-        terminal_indices = find_terminals(check_bonds)
-        index = 0
-        while index < len(check_bonds):
-            s, e = check_bonds[index]
-            if s in terminal_indices or e in terminal_indices:
-                del(check_bonds[index])
-            else:
-                index += 1
-    return check_bonds    
+def find_sssr(z_list, adj_matrix):
+    
+    new_z = list(np.where(z_list > 1, 6, 1))
+    
+    #print(new_adj)
+    chg_list = np.zeros(len(new_z))
+    new = chem.Molecule([new_z, adj_matrix, None, chg_list])
+    new_rd = new.get_rd_mol()
+    Chem.SanitizeMol(new_rd)
+    
+    sssrs = Chem.GetSymmSSSR(new_rd)
+    
+    return [list(sssrs[i]) for i in range(len(sssrs))]
 
 def get_lists(molecule: chem.Molecule):
     # period, group, adj
@@ -60,8 +42,7 @@ def get_lists(molecule: chem.Molecule):
             ve_list[i] = 8
 
     # ring membership
-    ring_list = molecule.get_sssr()
-    
+    ring_list = find_sssr(z_list, adj_matrix)
     
     return (
         period_list,
@@ -78,11 +59,11 @@ def get_lists(molecule: chem.Molecule):
 
 def get_extended_lists(period_list, ve_list, chg_list, ring_list):
     ring_members = np.unique(sum(ring_list, []))
-    print(ring_members)
     
     in_ring = np.zeros_like(period_list)
-    in_ring[ring_members] = 1
-    in_ring= in_ring.astype(bool)
+    if len(ring_members) > 0:
+        in_ring[ring_members] = 1
+    in_ring = in_ring.astype(bool)
     
     expanded_idx = (period_list > 2) & ~in_ring
     eve_list = np.copy(ve_list)
