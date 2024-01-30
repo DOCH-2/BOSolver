@@ -1,4 +1,5 @@
 from typing import List, Dict, Tuple
+from itertools import combinations as comb
 
 from rdkit import Chem
 
@@ -6,7 +7,7 @@ from gurobipy import GRB, Model, LinExpr
 from acerxn import chem, process
 import numpy as np
 
-def find_sssr(z_list, adj_matrix):
+def get_ring_info(z_list, adj_matrix):
     
     new_z = list(np.where(z_list > 1, 6, 1))
     
@@ -17,8 +18,19 @@ def find_sssr(z_list, adj_matrix):
     Chem.SanitizeMol(new_rd)
     
     sssrs = Chem.GetSymmSSSR(new_rd)
+    atoms_in_ring = [list(sssrs[i]) for i in range(len(sssrs))]
+    bond_rings = new_rd.GetRingInfo().BondRings()
+    bonds_in_ring = [list(map(lambda x: (new_rd.GetBondWithIdx(x).GetBeginAtomIdx(),
+                                      new_rd.GetBondWithIdx(x).GetEndAtomIdx()), 
+                           ring)) for ring in bond_rings
+                       ]
+    #print("bondsInRing:", bondsInRing)
+    #print(len(bondsInRing))
+    #print("AtomInRings:", [list(sssrs[i]) for i in range(len(sssrs))])
+    #print(len([list(sssrs[i]) for i in range(len(sssrs))]))
     
-    return [list(sssrs[i]) for i in range(len(sssrs))]
+    
+    return atoms_in_ring, bonds_in_ring 
 
 def get_lists(molecule: chem.Molecule):
     # period, group, adj
@@ -42,7 +54,8 @@ def get_lists(molecule: chem.Molecule):
             ve_list[i] = 8
 
     # ring membership
-    ring_list = find_sssr(z_list, adj_matrix)
+    ring_list, ring_bond_list = get_ring_info(z_list, adj_matrix)
+    
     
     return (
         period_list,
@@ -53,7 +66,8 @@ def get_lists(molecule: chem.Molecule):
         bond_list,
         bond_mapping,
         neighbor_list,
-        ring_list
+        ring_list,
+        ring_bond_list
     )
 
 
@@ -192,12 +206,13 @@ def resolve_chg(
     neighbor_list,
     chg_mol,
     eIsEven,
-    alreadyOctet
+    alreadyOctet,
+    stepIdx=0
 ):
     if atom_num == 1:
         return np.array([chg_mol]), {}
 
-    model = Model("resolve_chg")
+    model = Model(f"resolve_chg{stepIdx}")
 
     # bo: bond order
     bo = model.addVars(bond_num, lb=1, name="bo", vtype=GRB.INTEGER)
@@ -258,7 +273,7 @@ def resolve_chg(
     # Gurobi optimization
     model.setParam(GRB.Param.OutputFlag, 0)
     model.setParam(GRB.Param.TimeLimit, 1)
-    model.write("record_chg.lp")
+    model.write(f"record_chg{stepIdx}.lp")
 
     model.optimize()
 
@@ -271,11 +286,11 @@ def resolve_chg(
     #print("nSol", nSol)
     for s in range(nSol):
         model.params.SolutionNumber = s
-        model.write(f"output_chg{s}.sol")
+        model.write(f"output_chg{stepIdx}_{s}.sol")
 
     # retrieval
     bo_dict = {}
-    chg_list = np.zeros(atom_num)
+    chg_list = np.zeros(atom_num, dtype=np.int64)
     for i in range(bond_num):
         bo_dict[bond_list[i]] = int(bo[i].X)
     for i in range(atom_num):
@@ -283,7 +298,7 @@ def resolve_chg(
         
     return chg_list, bo_dict
 
-def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True):
+def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, cleanUp=True):
     (
         period_list,
         group_list,
@@ -293,10 +308,12 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True):
         bond_list,
         bond_mapping,
         neighbor_list,
-        ring_list
+        ring_list,
+        ring_bond_list
     ) = get_lists(molecule)
     atom_num, bond_num = len(z_list), len(bond_list)
     eIsEven = int(np.sum(z_list) - chg_mol) %2 == 0
+    resolve_step = 0
 
     chg_list, bo_dict = maximize_bo(
         atom_num,
@@ -329,7 +346,9 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True):
             bo_sum[q] += bo_dict[(p,q)]
         alreadyOctet = (group_list + bo_sum - chg_list == 8) & (period_list == 2)
         print("alreadyOctet", np.nonzero(alreadyOctet))
-        eve_list = get_extended_lists(period_list, ve_list, chg_list, ring_list)
+        
+        #ve_list is now expanded Valence list
+        eve_list = get_extended_lists(period_list, ve_list, chg_list, ring_list, cleanUp=cleanUp)
         new_chg_list, new_bo_dict = resolve_chg(
             atom_num,
             bond_num,
@@ -340,10 +359,65 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True):
             neighbor_list,
             chg_mol,
             eIsEven,
-            alreadyOctet
+            alreadyOctet,
+            resolve_step
         )
+        resolve_step += 1
+    
     else:
-        return chg_list, bo_matrix, chg_list, bo_matrix
+        new_chg_list, new_bo_dict = chg_list, bo_dict
+    
+    # cleanUp 
+    # subject:
+    # period>2, ring member, two or more double/triple bonds with 
+    # other ring members
+    if cleanUp:
+        #ring_mem_mask = np.put_along_axis(np.zeros(atom_num),
+                                          #np.unique(sum(ring_list, [])),
+                                          #1,
+                                          #axis=-1
+                                          #)
+        #rbtbc: ring, double/triple bond count
+        rbtbc = np.zeros(atom_num)
+        for ring_bonds in ring_bond_list:
+            for bond in ring_bonds:
+                if new_bo_dict[bond] > 1:
+                    rbtbc[bond[0]] += 1
+                    rbtbc[bond[1]] += 1
+        
+        ring_members = np.unique(sum(ring_list, []))
+        
+        in_ring = np.zeros_like(period_list)
+        if len(ring_members) > 0: in_ring[ring_members] = 1
+        in_ring = in_ring.astype(bool)
+                
+        cleanUp_expanded = (np.array(period_list) > 2) & in_ring & (rbtbc < 2)
+        #mve : modified expanded
+        mve_list = get_extended_lists(period_list, ve_list, new_chg_list, ring_list)
+        mve_list[cleanUp_expanded] += 2*np.where(new_chg_list > 0, new_chg_list, 0)[cleanUp_expanded]
+        
+        bo_sum = np.zeros(atom_num)
+        for p, q in bo_dict.keys():
+            bo_sum[p] += new_bo_dict[(p,q)]
+            bo_sum[q] += new_bo_dict[(p,q)]
+        alreadyOctet = (group_list + bo_sum - new_chg_list == 8) & (period_list == 2)
+        print("alreadyOctet", np.nonzero(alreadyOctet))
+        
+        new_chg_list, new_bo_dict = resolve_chg(
+            atom_num,
+            bond_num,
+            group_list,
+            bond_list,
+            bond_mapping,
+            mve_list,
+            neighbor_list,
+            chg_mol,
+            eIsEven,
+            alreadyOctet,
+            resolve_step
+        )
+        
+        resolve_step += 1
 
     bo_matrix2 = np.zeros((atom_num, atom_num))
     for p, q in new_bo_dict.keys():
@@ -352,7 +426,7 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True):
 
     return chg_list, bo_matrix, new_chg_list, bo_matrix2
 
-def compute_chg_and_bo(molecule, chg_mol, resolve=True):
+def compute_chg_and_bo(molecule, chg_mol, resolve=True, cleanUp=True):
     (
         period_list,
         group_list,
@@ -362,11 +436,13 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=True):
         bond_list,
         bond_mapping,
         neighbor_list,
-        ring_list
+        ring_list,
+        ring_bond_list
     ) = get_lists(molecule)
     
     atom_num, bond_num = len(z_list), len(bond_list)
     eIsEven = int(np.sum(z_list) - chg_mol) %2 == 0
+    resolve_step = 0
 
     chg_list, bo_dict = maximize_bo(
         atom_num,
@@ -407,9 +483,50 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=True):
             alreadyOctet
         )
         
+        resolve_step += 1
+        
         # error handling
         if len(bo_dict) == 0:
             return None, None
+    
+    # cleanUp 
+    # subject:
+    # period>2, ring member, two or more double/triple bonds with 
+    # other ring members
+    if cleanUp:
+        #rbtbc: ring, double/triple bond count
+        rbtbc = np.zeros(atom_num)
+        for ring_bonds in ring_bond_list:
+            for bond in ring_bonds:
+                if bo_dict[bond] > 1:
+                    rbtbc[bond[0]] += 1
+                    rbtbc[bond[1]] += 1
+                
+        cleanUp_expanded = (np.array(period_list) > 2) & (rbtbc < 2)
+        mve_list = get_extended_lists(period_list, ve_list, chg_list, ring_list)
+        mve_list[cleanUp_expanded] += 2*np.where(chg_list > 0, chg_list, 0)[cleanUp_expanded]
+        
+        bo_sum = np.zeros(atom_num)
+        for p, q in bo_dict.keys():
+            bo_sum[p] += bo_dict[(p,q)]
+            bo_sum[q] += bo_dict[(p,q)]
+        alreadyOctet = (group_list + bo_sum - chg_list == 8) & (period_list == 2)
+        
+        chg_list, bo_dict = resolve_chg(
+            atom_num,
+            bond_num,
+            group_list,
+            bond_list,
+            bond_mapping,
+            mve_list,
+            neighbor_list,
+            chg_mol,
+            eIsEven,
+            alreadyOctet,
+            resolve_step
+        )
+        
+        resolve_step += 1
     
     bo_matrix = np.zeros((atom_num, atom_num))
     for p, q in bo_dict.keys():

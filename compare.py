@@ -24,6 +24,8 @@ if __name__ == "__main__":
         _,
         bond_mapping,
         _,
+        _,
+        _
     ) = compute_chg_and_bo_gurobi.get_lists(molecule)
     print("bond mapping\n", bond_mapping)
     # print(resolve)

@@ -409,7 +409,7 @@ def compare_all():
         + f" {success_actobo}/{num_calculated}"
         + f" ({100 * success_actobo/ num_calculated:.1f}%)"
         + f" average TIME"
-        + f"{total_actobo / num}"
+        + f" {total_actobo / num}"
     )
     # print(
     # "Openbabel: "
