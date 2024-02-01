@@ -3,8 +3,8 @@ from itertools import combinations as comb
 
 from rdkit import Chem
 
-from gurobipy import GRB, Model, LinExpr
-from acerxn import chem, process
+from gurobipy import GRB, Model, LinExpr, Env
+from acerxn import chem
 import numpy as np
 
 
@@ -128,13 +128,17 @@ def maximize_bo(
     neighbor_list,
     chg_mol,
     eIsEven,
+    **kwargs
 ):
     # early stop
     if atom_num == 1:
         return np.array([chg_mol]), {}
 
     ### model construction
-    model = Model("maximize_bo")
+    env = Env(empty=True)
+    env.setParam("OutputFlag", 0)
+    env.start()
+    model = Model("maximize_bo", env=env)
 
     # bo: bond order
     bo = model.addVars(bond_num, lb=1, name="bo", vtype=GRB.INTEGER)
@@ -192,9 +196,15 @@ def maximize_bo(
     for i in range(atom_num):
         min_fc_obj.add(t1[2 * i] + t1[2 * i + 1])
         # min_wfc_obj.add((0.1 * group_list[i] + 0.6) * (t2[2 * i] + t2[2 * i + 1]))
+        
+    bo_priority = 2
+    chg_priority = 1
+    
+    if kwargs.get("mode", "") == "fc":
+        bo_priority, chg_priority = chg_priority, bo_priority
 
-    model.setObjectiveN(max_bo_obj, 0, priority=2, weight=GRB.MAXIMIZE, name="max_bo")
-    model.setObjectiveN(min_fc_obj, 1, priority=1, weight=GRB.MINIMIZE, name="min_fc")
+    model.setObjectiveN(max_bo_obj, 1, priority=bo_priority, weight=GRB.MAXIMIZE, name="max_bo")
+    model.setObjectiveN(min_fc_obj, 2, priority=chg_priority, weight=GRB.MINIMIZE, name="min_fc")
     
     #for test only
     #model.setObjectiveN(max_bo_obj, 0, priority=1, weight=GRB.MAXIMIZE, name="max_bo")
@@ -205,7 +215,7 @@ def maximize_bo(
     # Gurobi optimization
     model.setParam(GRB.Param.OutputFlag, 0)
     model.setParam(GRB.Param.TimeLimit, 1)
-    model.write("record.lp")
+    #model.write("record.lp")
 
     model.optimize()
 
@@ -218,8 +228,8 @@ def maximize_bo(
     # print("nSol", nSol)
     for s in range(nSol):
         model.params.SolutionNumber = s
-        model.write(f"output{s}.sol")
-
+        #model.write(f"output{s}.sol")
+    
     # retrieval
     bo_dict = {}
     chg_list = np.zeros(atom_num, dtype=np.int64)
@@ -228,6 +238,9 @@ def maximize_bo(
     for i in range(atom_num):
         chg_list[i] = int(t1[2 * i].X) - int(t1[2 * i + 1].X)
 
+    model.close()
+    env.close()
+    
     return chg_list, bo_dict
 
 
@@ -246,8 +259,13 @@ def resolve_chg(
 ):
     if atom_num == 1:
         return np.array([chg_mol]), {}
+    
+    ### model construction
+    env = Env(empty=True)
+    env.setParam("OutputFlag", 0)
+    env.start()
 
-    model = Model(f"resolve_chg{stepIdx}")
+    model = Model(f"resolve_chg{stepIdx}", env=env)
 
     # bo: bond order
     bo = model.addVars(bond_num, lb=1, name="bo", vtype=GRB.INTEGER)
@@ -310,7 +328,7 @@ def resolve_chg(
     # Gurobi optimization
     model.setParam(GRB.Param.OutputFlag, 0)
     model.setParam(GRB.Param.TimeLimit, 1)
-    model.write(f"record_chg{stepIdx}.lp")
+    #model.write(f"record_chg{stepIdx}.lp")
 
     model.optimize()
 
@@ -323,8 +341,8 @@ def resolve_chg(
     # print("nSol", nSol)
     for s in range(nSol):
         model.params.SolutionNumber = s
-        model.write(f"output_chg{stepIdx}_{s}.sol")
-
+        #model.write(f"output_chg{stepIdx}_{s}.sol")
+    
     # retrieval
     bo_dict = {}
     chg_list = np.zeros(atom_num, dtype=np.int64)
@@ -333,10 +351,13 @@ def resolve_chg(
     for i in range(atom_num):
         chg_list[i] = int(t1[2 * i].X) - int(t1[2 * i + 1].X)
 
+    model.close()
+    env.close()
+
     return chg_list, bo_dict
 
 
-def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, cleanUp=True):
+def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, cleanUp=True, **kwargs):
     (
         period_list,
         group_list,
@@ -363,6 +384,7 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, cleanUp=True):
         neighbor_list,
         chg_mol,
         eIsEven,
+        **kwargs
     )
     # early stop
     if len(bo_dict) == 0:
@@ -436,7 +458,7 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, cleanUp=True):
     return chg_list, bo_matrix, new_chg_list, bo_matrix2
 
 
-def compute_chg_and_bo(molecule, chg_mol, resolve=True, cleanUp=True):
+def compute_chg_and_bo(molecule, chg_mol, resolve=True, cleanUp=True, **kwargs):
     (
         period_list,
         group_list,
@@ -464,6 +486,7 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=True, cleanUp=True):
         neighbor_list,
         chg_mol,
         eIsEven,
+        **kwargs
     )
     # early stop
     if len(bo_dict) == 0:
