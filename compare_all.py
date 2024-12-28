@@ -18,11 +18,36 @@ import subprocess
 
 
 def contain_atom_not_allowed(rd_mol):
-    allowed = ["c", "h", "b", "o", "n", "li", "mg", "si", "p", "s", "f", "na", "co", "rh", "ni", "ti", "fe", "cl", "br", "bb", "lg", "pd", "i"]
+    allowed = [
+        "c",
+        "h",
+        "b",
+        "o",
+        "n",
+        "li",
+        "mg",
+        "si",
+        "p",
+        "s",
+        "f",
+        "na",
+        "co",
+        "rh",
+        "ni",
+        "ti",
+        "fe",
+        "cl",
+        "br",
+        "bb",
+        "lg",
+        "pd",
+        "i",
+    ]
     for atom in rd_mol.GetAtoms():
         if not (atom.GetSymbol().lower() in allowed):
             return True
     return False
+
 
 def restore_rdmol(z_list, bond_dict):
     e_mol = Chem.rdchem.EditableMol()
@@ -116,7 +141,7 @@ def restore_ac2bo(xyzstr: str, chg: int):
 
     t = time.time()
     chg_list, bo_matrix = compute_chg_and_bo_gurobi.compute_chg_and_bo(
-        ace_mol, chg, resolve=True
+        ace_mol, chg, resolve=True, cleanUp=True, mode="fc", HalogenConstraint=True
     )
     ac2bo_time = time.time() - t
 
@@ -251,7 +276,7 @@ def compare_all():
         if len(conformers) == 0:
             continue
         rd_org = molecule.get_rd_mol()
-        
+
         # use ONLY organic compunds
         if contain_atom_not_allowed(rd_org):
             continue

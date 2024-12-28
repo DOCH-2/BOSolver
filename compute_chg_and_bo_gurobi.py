@@ -254,6 +254,8 @@ def maximize_bo(
     ### model construction
     env = Env(empty=True)
     env.setParam("OutputFlag", 0)
+    # env.setParam("DualReductions", 0)
+    # env.setParam("LogFile", "gurobi.log")
     env.start()
     model = Model("maximize_bo", env=env)
     verbose = kwargs.get("printOptLog", False)
@@ -276,6 +278,7 @@ def maximize_bo(
     model.addConstrs(
         (db[i] + tb[i] <= 1 for i in range(bond_num)), name="BondOrderFlag"
     )
+    # b1 = model.addVars(bond_num, lb=1, ub=3, name="b", vtype=GRB.INTEGER)
 
     # t1: formal charge
     # t1[2i]: fc+ | t1[2i+1]: fc-
@@ -287,43 +290,54 @@ def maximize_bo(
     # weight considering electronegativity
     # t2 = model.addVars(2 * atom_num, name="t2", vtype=GRB.CONTINUOUS)
 
+    # o: octet distance
+    # the distance between the number of valence elctrons and
+    # the octet number(2 for 1st period, 8 for 2nd or higher period)
+    # o = 8 - (g - c + b)
+
     # Set Initial Values
     for i in range(bond_num):
         db[i].Start = db_starts[i]
         tb[i].Start = tb_starts[i]
+    # for i in range(bond_num):
+    #    b1[i].Start = 1 + db_starts[i] + 2 * tb_starts[i]
     for i in range(2 * atom_num):
         t1[i].Start = t1_starts[i]
 
-    # Halogen Constraints
-    # Halogen atoms, especially F and Cl, are not allowed to have
-    # formal charge whose absolute value is greater than 0,
-    # and they have only one single bond.
-    # TODO: Bromine, Iodine (Done, 240811)
-    # Br occassionaly has +1 formal charge, with 2 single bonds (as a three-membered ring)
-    # But for now, just simply apply the rule to F, Cl, and Br.
-    if Xsingle:
-        for i in np.flatnonzero((group_list == 7) & (period_list <= 4)):
-            model.addConstr(t1[2 * i] == 0, name=f"halogen+_{i}")
-            model.addConstr(t1[2 * i + 1] == 0, name=f"halogen-_{i}")
-    #   model.addConstr(t1[2 * i] + t1[2 * i + 1] == 0, name=f"halogen_{i}")
+    # TODO: Revision of Halogen Constraint
+    # Halogen atoms, especially Cl and Br, are not allowed for
+    # following the extended octet rule.
+    # RDKit does not allow Cl and Br to have valence state greater than 1
 
     # even: dummy variable to force no. of electrons even
     even = model.addVars(atom_num, name="even", vtype=GRB.INTEGER)
 
-    ### constraints construction
+    ### objectives and constraints construction
+    # objective functions
+    min_od_obj = LinExpr()  # octet distance minimization (octet maximization)
+    min_fc_obj = LinExpr()  # formal charge minimization
+    max_bo_obj = LinExpr()  # bond maximization
+    min_en_obj = LinExpr()  # electronegativity minimization
+
+    # constraints
     chg_constr = LinExpr()  # charge conservation rule
+
     for i in range(atom_num):
         lp_constr = LinExpr()  # lone pair rule
-        ve_constr = LinExpr()  # valence rule
-        X_constr = (
-            LinExpr()
-            if (Xsingle and group_list[i] == 7 and period_list[i] <= 4)
-            else None
-        )  # Halogen Constraint
+        ve_constr = LinExpr()  # valence electron
+        # X_constr = (
+        #    LinExpr()
+        #    if (Xsingle and group_list[i] == 7 and period_list[i] <= 4)
+        #    else None
+        # )  # Halogen Constraint
+
+        ve_constr.addConstant(group_list[i])
 
         chg_constr.add(t1[2 * i] - t1[2 * i + 1])
         lp_constr.add(t1[2 * i] - t1[2 * i + 1])
         ve_constr.add(-t1[2 * i] + t1[2 * i + 1])
+        min_fc_obj.add(t1[2 * i] + t1[2 * i + 1])
+        min_en_obj.add(en_list[i] * (t1[2 * i] - t1[2 * i + 1]))
 
         # summation over bond
         for j in neighbor_list[i]:
@@ -335,30 +349,40 @@ def maximize_bo(
                 1 + db[bond_mapping[(a, b)]] + tb[bond_mapping[(a, b)]] * 2
             )  # bond order
 
+            # bo = b1[bond_mapping[(a, b)]]
             lp_constr.add(bo)
             ve_constr.add(bo)
-            if X_constr is not None:
-                X_constr.add(bo)
+            # if X_constr is not None:
+            #    X_constr.add(bo)
+
+            max_bo_obj.add(bo)
 
         # the number of lone pair should not be negative
         model.addConstr(lp_constr <= group_list[i], name=f"lp_{i}")
 
         # TODO: octet rule
+        # octet distance
+        if period_list[i] == 1:
+            min_od_obj.add(2 - ve_constr)
+            model.addConstr(2 - ve_constr >= 0, name=f"od_{i}")
+        elif period_list[i] == 2 or len(neighbor_list[i]) <= 4:
+            min_od_obj.add(8 - ve_constr)
+            model.addConstr(8 - ve_constr >= 0, name=f"od_{i}")
 
         # the number of valence electron is not greater than maximum valence
         # model.addConstr(ve_constr + group_list[i] <= ve_list[i], name=f"ve_{i}")
         #
         # the number of valence electron is equal to maximum valence (8 for 2nd period atoms)
-        model.addConstr(ve_constr + group_list[i] == ve_list[i], name=f"ve_{i}")
+        # model.addConstr(ve_constr + group_list[i] == ve_list[i], name=f"ve_{i}")
 
         if eIsEven:
             # the number of valence electron is even number (no radical rule!)
-            model.addConstr(ve_constr + group_list[i] == 2 * even[i], name=f"noRad_{i}")
+            model.addConstr(ve_constr == 2 * even[i], name=f"noRad_{i}")
 
         # halogen atoms have only one single bond
         # halogens might have any bond (halogen anions), and in such case, does not apply the constraint
-        if X_constr is not None and X_constr.size() > 0:
-            model.addConstr(X_constr == 1, name=f"X_{i}")
+        # if X_constr is not None and X_constr.size() > 0:
+        #    model.addConstr(X_constr == 1, name=f"X_{i}")
 
         # Ring Constraint
         if cleanUp and (i in ring_neighbors_info):
@@ -372,23 +396,19 @@ def maximize_bo(
 
     model.addConstr(chg_constr == chg_mol, name="chg_consv")
 
-    ### optimization
-    max_bo_obj = LinExpr()  # bond maximization
-    min_fc_obj = LinExpr()  # formal charge minimization
-    min_en_obj = LinExpr()  # electronegativity minimization
+    ## formal charge minimization
+    # for i in range(atom_num):
+    #    min_fc_obj.add(t1[2 * i] + t1[2 * i + 1])
+    #    # min_wfc_obj.add((0.1 * group_list[i] + 0.6) * (t2[2 * i] + t2[2 * i + 1]))
+    ## bond maximization
+    # for i in range(bond_num):
+    #    bo = LinExpr(1 + db[i] + tb[i] * 2)  # bond order
+    #    max_bo_obj.add(bo)
+    ## electronegativity minimization
+    # for i, en in enumerate(en_list):
+    #    min_en_obj.add(en * (t1[2 * i] - t1[2 * i + 1]))
 
-    # bond maximization
-    for i in range(bond_num):
-        bo = LinExpr(1 + db[i] + tb[i] * 2)  # bond order
-        max_bo_obj.add(bo)
-    # formal charge minimization
-    for i in range(atom_num):
-        min_fc_obj.add(t1[2 * i] + t1[2 * i + 1])
-        # min_wfc_obj.add((0.1 * group_list[i] + 0.6) * (t2[2 * i] + t2[2 * i + 1]))
-
-    for i, en in enumerate(en_list):
-        min_en_obj.add(en * (t1[2 * i] - t1[2 * i + 1]))
-
+    od_priority = 4  # octet distance priority
     bo_priority = 3  # bond order maximization priority
     chg_priority = 2  # charge separation priority
     en_priority = 1  # electronegativity priority
@@ -397,21 +417,27 @@ def maximize_bo(
         bo_priority, chg_priority = chg_priority, bo_priority
 
     model.setObjectiveN(
-        max_bo_obj, 1, priority=bo_priority, weight=GRB.MAXIMIZE, name="max_bo"
+        min_od_obj, 1, priority=od_priority, weight=GRB.MINIMIZE, name="min_od"
+    )
+
+    model.setObjectiveN(
+        max_bo_obj, 2, priority=bo_priority, weight=GRB.MAXIMIZE, name="max_bo"
     )
     model.setObjectiveN(
-        min_fc_obj, 2, priority=chg_priority, weight=GRB.MINIMIZE, name="min_fc"
+        min_fc_obj, 3, priority=chg_priority, weight=GRB.MINIMIZE, name="min_fc"
     )
     model.setObjectiveN(
-        min_en_obj, 3, priority=en_priority, weight=GRB.MINIMIZE, name="min_en"
+        min_en_obj, 4, priority=en_priority, weight=GRB.MINIMIZE, name="min_en"
     )
 
     # Gurobi optimization
     # model.setParam(GRB.Param.OutputFlag, 0)
-    model.setParam(GRB.Param.TimeLimit, 1)
+    # model.setParam(GRB.Param.TimeLimit, 1)
     if verbose:
         model.write("record.lp")
-
+    # model.write("model.lp")
+    # model.computeIIS()
+    # model.write("model.ilp")
     model.optimize()
 
     # error handling
@@ -465,7 +491,7 @@ def resolve_chg(
     ring_neighbors_info,
     chg_mol,
     eIsEven,
-    alreadyOctet,
+    overcharged,
     db_starts,
     tb_starts,
     t1_starts,
@@ -505,39 +531,36 @@ def resolve_chg(
     for i in range(2 * atom_num):
         t1[i].Start = t1_starts[i]
 
-    # Halogen atoms, especially F and Cl, are not allowed to have
-    # formal charge whose absolute value is greater than 0,
-    # and they have only one single bond.
-    # TODO: Bromine, Iodine (Done, 240811)
-    # Br occassionaly has +1 formal charge, with 2 single bonds (as a three-membered ring)
-    # But for now, just simply apply the rule to F, Cl, and Br.
-    if Xsingle:
-        for i in np.flatnonzero((group_list == 7) & (period_list <= 4)):
-            model.addConstr(t1[2 * i] == 0, name=f"halogen+_{i}")
-            model.addConstr(t1[2 * i + 1] == 0, name=f"halogen-_{i}")
-            # model.addConstr(t1[2 * i] + t1[2 * i + 1] == 0, name=f"halogen_{i}")
+    # TODO: Revision of Halogen Constraint
+    # Halogen atoms, especially Cl and Br, are not allowed for
+    # following the extended octet rule.
+    # RDKit does not allow Cl and Br to have valence state greater than 1
 
     # even: dummy variable to force no. of electrons even
     even = model.addVars(atom_num, name="even", vtype=GRB.INTEGER)
 
     ### constraints construction
     chg_constr = LinExpr()  # charge conservation rule
-    octet_constr = LinExpr()  #
 
     model.update()
 
     for i in range(atom_num):
         lp_constr = LinExpr()  # lone pair rule
-        eve_constr = LinExpr()  # expanded valence rule
-        X_constr = (
-            LinExpr()
-            if (Xsingle and group_list[i] == 7 and period_list[i] <= 4)
-            else None
-        )  # Halogen rule
+        ve_constr = LinExpr()  # valence electron
+        # X_constr = (
+        #    LinExpr()
+        #    if (Xsingle and group_list[i] == 7 and period_list[i] <= 4)
+        #    else None
+        # )  # Halogen rule
+        X_flag = Xsingle and group_list[i] == 7 and period_list[i] <= 4
+
+        ve_constr.add(group_list[i])
+        prev_ve = group_list[i]  # previous valence electron
 
         chg_constr.add(t1[2 * i] - t1[2 * i + 1])
         lp_constr.add(t1[2 * i] - t1[2 * i + 1])
-        eve_constr.add(-t1[2 * i] + t1[2 * i + 1])
+        ve_constr.add(-t1[2 * i] + t1[2 * i + 1])
+        prev_ve += -t1_starts[2 * i] + t1_starts[2 * i + 1]
 
         # summation over bond
         for j in neighbor_list[i]:
@@ -550,38 +573,53 @@ def resolve_chg(
             )  # bond order
 
             lp_constr.add(bo)
-            eve_constr.add(bo)
-            if X_constr is not None:
-                X_constr.add(bo)
+            ve_constr.add(bo)
+            # if X_constr is not None:
+            #    X_constr.add(bo)
+
+            prev_ve += (
+                1
+                + db_starts[bond_mapping[(a, b)]]
+                + 2 * tb_starts[bond_mapping[(a, b)]]
+            )
 
             # freeze the bond order for already octet atoms(period==2)
-            if bool(alreadyOctet[i]):
-                # model.addConstr(eve_constr + group_list[i] == 8, name=f"eve_{i}")
-                db[bond_mapping[(a, b)]].lb = db[bond_mapping[(a, b)]].Start
-                db[bond_mapping[(a, b)]].ub = db[bond_mapping[(a, b)]].Start
-                tb[bond_mapping[(a, b)]].lb = tb[bond_mapping[(a, b)]].Start
-                tb[bond_mapping[(a, b)]].ub = tb[bond_mapping[(a, b)]].Start
+            # if bool(alreadyOctet[i]):
+            #    # model.addConstr(eve_constr + group_list[i] == 8, name=f"eve_{i}")
+            #    db[bond_mapping[(a, b)]].lb = db[bond_mapping[(a, b)]].Start
+            #    db[bond_mapping[(a, b)]].ub = db[bond_mapping[(a, b)]].Start
+            #    tb[bond_mapping[(a, b)]].lb = tb[bond_mapping[(a, b)]].Start
+            #    tb[bond_mapping[(a, b)]].ub = tb[bond_mapping[(a, b)]].Start
 
         model.addConstr(lp_constr <= group_list[i], name=f"lp_{i}")
 
-        # freeze the formal charge also
-        if bool(alreadyOctet[i]):
-            # model.addConstr(eve_constr + group_list[i] == 8, name=f"eve_{i}")
-            t1[2 * i].lb = t1[2 * i].Start
-            t1[2 * i].ub = t1[2 * i].Start
-            t1[2 * i + 1].lb = t1[2 * i + 1].Start
-            t1[2 * i + 1].ub = t1[2 * i + 1].Start
+        # TODO: octet rule
+        # if charged and period > 2, do not apply constraint
+        # else, freeze the valence (octet rule)
+        if not bool(overcharged[i]):
+            model.addConstr(ve_constr == prev_ve, name=f"ve_freeze_{i}")
+        # TODO: Halogen Constraint
+        # halogen atoms should obey the octet rule
+        # (no extended octet rule for halogens)
+        if X_flag:
+            model.addConstr(ve_constr == prev_ve, name=f"XC_{i}")
 
-        else:
-            # apply loosen octet rule
-            model.addConstr(eve_constr <= eve_list[i] - group_list[i], name=f"eve_{i}")
-            # model.addConstr(eve_constr == eve_list[i] - group_list[i], name=f"eve_{i}")
+        # freeze the formal charge also
+        # if bool(alreadyOctet[i]):
+        #    # model.addConstr(eve_constr + group_list[i] == 8, name=f"eve_{i}")
+        #    t1[2 * i].lb = t1[2 * i].Start
+        #    t1[2 * i].ub = t1[2 * i].Start
+        #    t1[2 * i + 1].lb = t1[2 * i + 1].Start
+        #    t1[2 * i + 1].ub = t1[2 * i + 1].Start
+
+        # else:
+        #    # apply loosen octet rule
+        #    model.addConstr(eve_constr <= eve_list[i] - group_list[i], name=f"eve_{i}")
+        #    # model.addConstr(eve_constr == eve_list[i] - group_list[i], name=f"eve_{i}")
 
         if eIsEven:
             # the number of valence electron is even number (no radical rule!)
-            model.addConstr(
-                eve_constr + group_list[i] == 2 * even[i], name=f"noRad_{i}"
-            )
+            model.addConstr(ve_constr == 2 * even[i], name=f"noRad_{i}")
 
         # Ring Constraint
         if cleanUp and (i in ring_neighbors_info):
@@ -595,8 +633,8 @@ def resolve_chg(
 
         # halogen atoms have only one single bond
         # halogens might have any bond (halogen anions), and in such case, does not apply the constraint
-        if X_constr is not None and X_constr.size() > 0:
-            model.addConstr(X_constr == 1, name=f"X_{i}")
+        # if X_constr is not None and X_constr.size() > 0:
+        #    model.addConstr(X_constr == 1, name=f"X_{i}")
 
     model.addConstr(chg_constr == chg_mol, name="chg_consv")
 
@@ -617,8 +655,8 @@ def resolve_chg(
     for i, en in enumerate(en_list):
         min_en_obj.add(en * (t1[2 * i] - t1[2 * i + 1]))
 
-    # bo_priority = 3 # bond order maximization priority
-    chg_priority = 2  # charge separation priority
+    bo_priority = 2  # bond order maximization priority
+    chg_priority = 3  # charge separation priority
     en_priority = 1  # electronegativity priority
 
     # if kwargs.get("mode", "") == "fc":
@@ -644,7 +682,10 @@ def resolve_chg(
 
     # error handling
     if model.status != GRB.Status.OPTIMAL:
-        print(f"resolve_chg: Optimization failed. (status: {model.status})")
+        print(
+            f"resolve_chg: Optimization failed. (status: {model.status})",
+            file=sys.stderr,
+        )
         return np.zeros(atom_num), {}, (None, None, None)
 
     # result record
@@ -857,22 +898,12 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=False, cleanUp=True, **kwargs)
             bo_sum[p] += bo_dict[(p, q)]
             bo_sum[q] += bo_dict[(p, q)]
 
-        # TODO: Check the condition for already octet atoms
-        # 1. period == 2
-        # 2. holds the octet rule
-        # 3. no charge on itself
-        # 4. no charge on any neighbors (unless, reallocation might be possible)
-        #       subjects that need chg resolve
-        #       print([np.any(np.abs(chg_list[neighbor]) > 0) for neighbor in neighbor_list])
+        # TODO: Check the condition for overcharged atoms
+        # 1. period > 2
+        # 2. non-zero charge on itself
 
-        alreadyOctet = (
-            (group_list + bo_sum - chg_list == 8)
-            & (period_list == 2)
-            # & (np.abs(chg_list) == 0)
-            & np.array(
-                [np.all(np.abs(chg_list[neighbor]) == 0) for neighbor in neighbor_list]
-            )
-        )
+        overcharged = (period_list > 2) & (np.abs(chg_list) != 0)
+        # print("overcharged", np.nonzero(overcharged))
         # print("alreadyOctet", np.nonzero(alreadyOctet))
 
         # alreadyOctet = \
@@ -896,7 +927,7 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=False, cleanUp=True, **kwargs)
             ring_neighbors_info,
             chg_mol,
             eIsEven,
-            alreadyOctet,
+            overcharged,
             raw_outputs[0],
             raw_outputs[1],
             raw_outputs[2],
