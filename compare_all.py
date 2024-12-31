@@ -12,7 +12,15 @@ sys.path.append("/home/leejinwon")
 from acerxn import chem
 from acerxn import process
 import numpy as np
-import compute_chg_and_bo_gurobi
+
+import compute_chg_and_bo_pulp
+
+compute_chg_and_bo = compute_chg_and_bo_pulp.compute_chg_and_bo
+
+# import compute_chg_and_bo_gurobi
+
+# compute_chg_and_bo = compute_chg_and_bo_gurobi.compute_chg_and_bo
+
 import time
 import subprocess
 
@@ -140,7 +148,7 @@ def restore_ac2bo(xyzstr: str, chg: int):
     ace_mol.bo_matrix = None
 
     t = time.time()
-    chg_list, bo_matrix = compute_chg_and_bo_gurobi.compute_chg_and_bo(
+    chg_list, bo_matrix = compute_chg_and_bo(
         ace_mol, chg, resolve=True, cleanUp=True, mode="fc", HalogenConstraint=True
     )
     ac2bo_time = time.time() - t
@@ -165,6 +173,7 @@ def restore_ac2bo(xyzstr: str, chg: int):
         | rdmolops.SanitizeFlags.SANITIZE_SETHYBRIDIZATION
     )
     # print("sansansan", sanflg)
+    # print(Chem.MolToSmiles(rd_actobo, canonical=True), "temp")
     try:
         Chem.SanitizeMol(rd_actobo)
         smi_ac2bo = Chem.MolToSmiles(rd_actobo, canonical=True)
