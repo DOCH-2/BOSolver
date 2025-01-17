@@ -262,6 +262,7 @@ def maximize_bo(
     verbose = kwargs.get("printOptLog", False)
     Xsingle = kwargs.get("HalogenConstraint", False)
     cleanUp = kwargs.get("cleanUp", False) and (len(ring_neighbors_info) > 0)
+    M_list = kwargs.get("MetalCenters", [])
 
     db_starts = kwargs.get("db_starts", [0] * bond_num)
     tb_starts = kwargs.get("tb_starts", [0] * bond_num)
@@ -358,6 +359,12 @@ def maximize_bo(
 
             max_bo_obj.add(bo)
 
+            if Xsingle and group_list[i] == 7 and period_list[i] <= 4:
+                model.addConstr(bo == 1, name=f"XC_{i}")
+
+            if i in M_list:
+                model.addConstr(bo == 1, name=f"SB_{i}_{j}")
+
         # the number of lone pair should not be negative
         model.addConstr(lp_constr <= group_list[i], name=f"lp_{i}")
 
@@ -427,9 +434,9 @@ def maximize_bo(
     model.setObjectiveN(
         min_fc_obj, 3, priority=chg_priority, weight=GRB.MINIMIZE, name="min_fc"
     )
-    #model.setObjectiveN(
+    # model.setObjectiveN(
     #   min_en_obj, 4, priority=en_priority, weight=GRB.MINIMIZE, name="min_en"
-    #)
+    # )
 
     # Gurobi optimization
     # model.setParam(GRB.Param.OutputFlag, 0)
@@ -509,6 +516,7 @@ def resolve_chg(
     verbose = kwargs.get("printOptLog", False)
     Xsingle = kwargs.get("HalogenConstraint", False)
     cleanUp = kwargs.get("cleanUp", False) and (len(ring_neighbors_info) > 0)
+    M_list = kwargs.get("MetalCenters", [])
 
     model = Model(f"resolve_chg{stepIdx}", env=env)
 
@@ -521,7 +529,7 @@ def resolve_chg(
 
     # t1: formal charge
     t1 = model.addVars(2 * atom_num, lb=0, name="t1", vtype=GRB.INTEGER)
-    # t2: formal charge for weighted objective function
+    # import numpy as npt2: formal charge for weighted objective function
     # weight considering electronegativity
     # t2 = model.addVars(2 * atom_num, name="t2", vtype=GRB.CONTINUOUS)
 
@@ -584,6 +592,12 @@ def resolve_chg(
                 + 2 * tb_starts[bond_mapping[(a, b)]]
             )
 
+            if Xsingle and group_list[i] == 7 and period_list[i] <= 4:
+                model.addConstr(bo == 1, name=f"XC_{i}")
+
+            if i in M_list:
+                model.addConstr(bo == 1, name=f"SB_{i}_{j}")
+
             # freeze the bond order for already octet atoms(period==2)
             # if bool(alreadyOctet[i]):
             #    # model.addConstr(eve_constr + group_list[i] == 8, name=f"eve_{i}")
@@ -598,15 +612,12 @@ def resolve_chg(
         # if charged and period > 2, do not apply constraint
         # else, freeze the valence (octet rule)
         if not bool(overcharged[i]):
-            #model.addConstr(ve_constr == prev_ve, name=f"ve_freeze_{i}") # don't know why this is not working
-            model.addConstr(ve_constr <= prev_ve, name=f"ve_freeze_{i}") # the same constraint with the maximize_bo
+            # model.addConstr(ve_constr == prev_ve, name=f"ve_freeze_{i}") # don't know why this is not working
+            model.addConstr(
+                ve_constr == prev_ve, name=f"ve_freeze_{i}"
+            )  # the same constraint with the maximize_bo
         else:
             model.addConstr(ve_constr >= prev_ve, name=f"ve_expanded_{i}")
-        # TODO: Halogen Constraint
-        # halogen atoms should obey the octet rule
-        # (no extended octet rule for halogens)
-        if X_flag:
-            model.addConstr(ve_constr == prev_ve, name=f"XC_{i}")
 
         # freeze the formal charge also
         # if bool(alreadyOctet[i]):
@@ -753,8 +764,8 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, cleanUp=True, **kw
         eIsEven,
         **kwargs,
     )
-    #print("Debug: chg_list0", chg_list0)
-    #print("Debug: bo_dict0", bo_dict0)
+    # print("Debug: chg_list0", chg_list0)
+    # print("Debug: bo_dict0", bo_dict0)
 
     # early stop
     if chg_list0 is None and bo_dict0 is None:
@@ -777,8 +788,8 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, cleanUp=True, **kw
         for p, q in bo_dict0.keys():
             bo_sum[p] += bo_dict0[(p, q)]
             bo_sum[q] += bo_dict0[(p, q)]
-        
-        #alreadyOctet = (group_list + bo_sum - chg_list0 == 8) & (period_list == 2)
+
+        # alreadyOctet = (group_list + bo_sum - chg_list0 == 8) & (period_list == 2)
         overcharged = (period_list > 2) & (np.abs(chg_list0) != 0)
         print("Debug: overcharged", np.nonzero(overcharged))
 

@@ -4,8 +4,7 @@ import sys
 
 from rdkit import Chem
 
-from acerxn import chem
-from gurobipy import GRB, Model, LinExpr, Env
+from acerxn.chem import Molecule, periodic_table
 import pulp as pl
 import numpy as np
 from scipy import spatial
@@ -25,11 +24,11 @@ EN_TABLE = {
     "A1": 1.613,
     "Si": 1.916,
     "P": 2.253,
-    #"P": 3.053, # phosphorus, adjusted
+    # "P": 3.053, # phosphorus, adjusted
     "S": 2.589,
-    #"S": 3.089, # sulfur, adjusted
+    # "S": 3.089, # sulfur, adjusted
     "Cl": 2.869,
-    #"Cl": 3.369, # Halogen, adjusted
+    # "Cl": 3.369, # Halogen, adjusted
     "Ar": 3.242,
     "K": 0.734,
     "Ca": 1.034,
@@ -38,7 +37,7 @@ EN_TABLE = {
     "As": 2.211,
     "Se": 2.424,
     "Br": 2.685,
-    #"Br": 3.285, # Halogen, adjusted
+    # "Br": 3.285, # Halogen, adjusted
     "Kr": 2.966,
     "Rb": 0.706,
     "Sr": 0.963,
@@ -46,8 +45,8 @@ EN_TABLE = {
     "Sn": 1.824,
     "Sb": 1.984,
     "Te": 2.158,
-    "I": 2.359+1,
-    #"I": 3.159, # Halogen, adjusted
+    "I": 2.359 + 1,
+    # "I": 3.159, # Halogen, adjusted
     "Xe": 2.582,
 }  # J. Am. Chem. Soc. 1989, 111, 25, 9003–9014
 
@@ -58,7 +57,7 @@ def moSolve(prob, objs, verbose: bool):
     objvalues = []
     if not (prob.solver):
         prob.solver = pl.LpSolverDefault
-        prob.solver.msg = False # suppress the output
+        prob.solver.msg = False  # suppress the output
     for i, (_, obj, s) in enumerate(objs):
         prob.setObjective(obj)
         prob.sense = s
@@ -111,7 +110,12 @@ def get_ring_info(z_list, adj_matrix):
     new_z_list[new_z_list == 4] = 6  # C
     new_z_list[new_z_list == 5] = 15  # P
     new_z_list[new_z_list == 6] = 16  # S
-    new_rd = chem.Molecule([new_z_list, adj_matrix, None, chg_list]).get_rd_mol()
+
+    new_rd = Chem.rdchem.RWMol()
+    for z in new_z_list:
+        new_rd.AddAtom(Chem.rdchem.Atom(int(z)))
+    for b in np.vstack(np.triu(adj_matrix, k=1).nonzero()).T:
+        new_rd.AddBond(int(b[0]), int(b[1]), Chem.rdchem.BondType.SINGLE)
     Chem.SanitizeMol(new_rd)
 
     sssrs = Chem.GetSymmSSSR(new_rd)
@@ -154,7 +158,7 @@ def get_ring_info(z_list, adj_matrix):
     return atoms_in_ring, bonds_in_ring, ring_neighbors_info
 
 
-def get_lists(molecule: chem.Molecule, strict=True):
+def get_lists(molecule: Molecule, strict=True):
     # period, group, adj
     period_list, group_list = molecule.get_period_group_list()
     adj_matrix = np.copy(molecule.get_matrix("adj"))
@@ -182,7 +186,7 @@ def get_lists(molecule: chem.Molecule, strict=True):
     _, _, ring_neighbors_info = get_ring_info(z_list, adj_matrix)
 
     # electronegativity
-    en_list = np.array([EN_TABLE[chem.periodic_table[z - 1]] for z in z_list])
+    en_list = np.array([EN_TABLE[periodic_table[z - 1]] for z in z_list])
 
     return (
         period_list,
@@ -275,6 +279,7 @@ def maximize_bo(
     verbose = kwargs.get("printOptLog", False)
     Xsingle = kwargs.get("HalogenConstraint", False)
     cleanUp = kwargs.get("cleanUp", False) and (len(ring_neighbors_info) > 0)
+    M_list = kwargs.get("MetalCenters", [])
 
     db_starts = kwargs.get("db_starts", [0] * bond_num)
     tb_starts = kwargs.get("tb_starts", [0] * bond_num)
@@ -358,6 +363,15 @@ def maximize_bo(
 
             max_bo_obj.addInPlace(bo)
 
+            # halogen atoms have only one single bond
+            # halogens might have any bond (halogen anions), and in such case, does not apply the constraint
+            if Xsingle and group_list[i] == 7 and period_list[i] <= 4:
+                prob += bo == 1, f"XC_{i}"
+
+            # metal constraint
+            if i in M_list:
+                prob += bo == 1, f"SB_{i}_{j}"
+
         # the number of lone pair should not be negative
         prob += lp_constr <= group_list[i], f"lp_{i}"
 
@@ -373,11 +387,6 @@ def maximize_bo(
         # the number of valence electron is even number (no radical rule!)
         if eIsEven:
             prob += ve_constr == 2 * even[i], f"noRad_{i}"
-
-        # halogen atoms have only one single bond
-        # halogens might have any bond (halogen anions), and in such case, does not apply the constraint
-        # if X_constr is not None and X_constr.size() > 0:
-        #    model.addConstr(X_constr == 1, name=f"X_{i}")
 
         # Ring Constraint
         if cleanUp and (i in ring_neighbors_info):
@@ -403,10 +412,10 @@ def maximize_bo(
         (od_priority, min_od_obj, pl.LpMinimize),
         (bo_priority, max_bo_obj, pl.LpMaximize),
         (chg_priority, min_fc_obj, pl.LpMinimize),
-        #(en_priority, min_en_obj, pl.LpMinimize),
+        # (en_priority, min_en_obj, pl.LpMinimize),
     ]
     objs = sorted(objs, key=lambda x: x[0])
-    
+
     # Pulp optimization
     prob, statuses, objvalues = moSolve(prob, objs, True)
 
@@ -422,11 +431,11 @@ def maximize_bo(
     # result record
     if verbose:
         import json
+
         output = prob.toDict()
         output["status"] = statuses
         output["obj_values"] = objvalues
         json.dump(output, open("output.json", "w"), indent=4, default=str)
-        
 
     # retrieval
     bo_dict = {}
@@ -462,15 +471,17 @@ def resolve_chg(
     stepIdx=0,
     **kwargs,
 ):
+
     if atom_num == 1:
         return np.array([chg_mol]), {}
 
     ### model construction
     prob = pl.LpProblem(f"resolve_chg{stepIdx}", pl.LpMaximize)
-    
+
     verbose = kwargs.get("printOptLog", False)
     Xsingle = kwargs.get("HalogenConstraint", False)
     cleanUp = kwargs.get("cleanUp", False) and (len(ring_neighbors_info) > 0)
+    M_list = kwargs.get("MetalCenters", [])
 
     # bo: bond order
     db = pl.LpVariable.dicts("dbFlag", range(bond_num), 0, 1, pl.LpBinary)
@@ -479,7 +490,7 @@ def resolve_chg(
 
     # t1: formal charge
     t1 = pl.LpVariable.dicts("t1", range(2 * atom_num), 0, None, pl.LpInteger)
-    
+
     # t2: formal charge for weighted objective function
     # weight considering electronegativity
     # t2 = model.addVars(2 * atom_num, name="t2", vtype=GRB.CONTINUOUS)
@@ -515,7 +526,7 @@ def resolve_chg(
         ve_constr.addInPlace(-t1[2 * i] + t1[2 * i + 1])
         min_fc_obj.addInPlace(t1[2 * i] + t1[2 * i + 1])
         min_en_obj.addInPlace(en_list[i] * (t1[2 * i] - t1[2 * i + 1]))
-        prev_ve += -t1_starts[2 * i] + t1_starts[2 * i + 1]
+        prev_ve += -t1_starts[2 * i] + t1_starts[2 * i + 1]  # previous valence electron
 
         # summation over bond
         for j in neighbor_list[i]:
@@ -529,14 +540,30 @@ def resolve_chg(
 
             lp_constr.addInPlace(bo)
             ve_constr.addInPlace(bo)
-            
+
             max_bo_obj.addInPlace(bo)
 
             prev_ve += (
                 1
                 + db_starts[bond_mapping[(a, b)]]
                 + 2 * tb_starts[bond_mapping[(a, b)]]
-            )
+            )  # previous valence electron
+            # Halogen Constraint
+            # halogen atoms should obey the octet rule
+            # (no extended octet rule for halogens)
+            # TODO: Revision of Halogen Constraint
+            # Halogen atoms, especially Cl and Br, are not allowed for
+            # following the extended octet rule.
+            # RDKit does not allow Cl and Br to have valence state greater than 1
+
+            # halogen atoms have only one single bond
+            # halogens might not have any bond (halogen anions), and in such case, does not apply the constraint
+            if Xsingle and group_list[i] == 7 and period_list[i] <= 4:
+                prob += bo == 1, f"XC_{i}"
+
+            # metal constraint
+            if i in M_list:
+                prob += bo == 1, f"SB_{i}_{j}"
 
         # the number of lone pair should not be negative
         prob += lp_constr <= group_list[i], f"lp_{i}"
@@ -545,20 +572,13 @@ def resolve_chg(
         # if charged and period > 2, apply expanded octet rule
         # else, freeze the valence (octet rule)
         if not bool(overcharged[i]):
-            #prob += ve_constr == prev_ve, f"ve_freeze_{i}" # don't know why this is not working
-            prob += ve_constr <= prev_ve, f"ve_freeze_{i}"  # the same constraint with the maximize_bo
+            prob += (
+                ve_constr == prev_ve,
+                f"ve_freeze_{i}",
+            )  # don't know why this is not working
+            # prob += ve_constr <= prev_ve, f"ve_freeze_{i}"  # this constraint goes wrong with azide moiety
         else:
             prob += ve_constr >= prev_ve, f"ve_expanded_{i}"
-        
-        # Halogen Constraint
-        # halogen atoms should obey the octet rule
-        # (no extended octet rule for halogens)
-        # TODO: Revision of Halogen Constraint
-        # Halogen atoms, especially Cl and Br, are not allowed for
-        # following the extended octet rule.
-        # RDKit does not allow Cl and Br to have valence state greater than 1
-        if X_flag:
-            prob += ve_constr == prev_ve, f"XC_{i}"
 
         # the number of valence electron is even number (no radical rule!)
         if eIsEven:
@@ -580,17 +600,17 @@ def resolve_chg(
     bo_priority = 2  # bond order maximization priority
     chg_priority = 1  # charge separation priority
     en_priority = 3  # electronegativity priority
-    
+
     objs = [
-        #(bo_priority, max_bo_obj, pl.LpMaximize),
+        # (bo_priority, max_bo_obj, pl.LpMaximize),
         (chg_priority, min_fc_obj, pl.LpMinimize),
         (en_priority, min_en_obj, pl.LpMinimize),
     ]
     objs = sorted(objs, key=lambda x: x[0])
-    
+
     # Pulp optimization
     prob, statuses, objvalues = moSolve(prob, objs, True)
-    
+
     # error handling
     for i, status in enumerate(statuses):
         if status != pl.LpStatusOptimal:
@@ -603,10 +623,13 @@ def resolve_chg(
     # result record
     if verbose:
         import json
+
         output = prob.toDict()
         output["status"] = statuses
         output["obj_values"] = objvalues
-        json.dump(output, open(f"output_resolve{stepIdx}.json", "w"), indent=4, default=str)
+        json.dump(
+            output, open(f"output_resolve{stepIdx}.json", "w"), indent=4, default=str
+        )
 
     # retrieval
     bo_dict = {}
@@ -678,13 +701,13 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, cleanUp=True, **kw
         for p, q in bo_dict0.keys():
             bo_sum[p] += bo_dict0[(p, q)]
             bo_sum[q] += bo_dict0[(p, q)]
-        
+
         # TODO: Check the condition for overcharged atoms
         # 1. period > 2
         # 2. non-zero charge on itself
         overcharged = (period_list > 2) & (np.abs(chg_list0) != 0)
         print("Debug: overcharged", np.nonzero(overcharged))
-        
+
         chg_list1, bo_dict1, raw_outputs1 = resolve_chg(
             atom_num,
             bond_num,
@@ -718,7 +741,24 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, cleanUp=True, **kw
     return chg_list0, bo_matrix0, chg_list1, bo_matrix1
 
 
-def compute_chg_and_bo(molecule, chg_mol, resolve=False, cleanUp=True, **kwargs):
+def compute_chg_and_bo(
+    molecule: Molecule, chg_mol, resolve=True, cleanUp=True, **kwargs
+):
+    """
+    Compute the charge and bond order for a given molecule.
+
+    Args:
+        molecule (Molecule): The molecule object containing atomic and bonding information.
+        chg_mol (int): The total charge of the molecule.
+        resolve (bool, optional): Whether to go through charge resolution step if needed. Defaults to True.
+        cleanUp (bool, optional): Whether to apply heuristics that cleans up the resulting molecular graph. Defaults to True.
+        **kwargs: Additional keyword arguments to be passed to the maximize_bo and resolve_chg functions.
+
+    Returns:
+        tuple: A tuple containing the list of charges for each atom and the bond order matrix.::
+
+    """
+
     (
         period_list,
         group_list,
@@ -770,7 +810,7 @@ def compute_chg_and_bo(molecule, chg_mol, resolve=False, cleanUp=True, **kwargs)
         # 1. period > 2
         # 2. non-zero charge on itself
         overcharged = (period_list > 2) & (np.abs(chg_list) != 0)
-        
+
         chg_list, bo_dict, raw_outputs2 = resolve_chg(
             atom_num,
             bond_num,
