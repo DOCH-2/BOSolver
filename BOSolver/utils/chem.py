@@ -100,23 +100,37 @@ def get_bond_info(mol: Chem.Mol):
         list(map(lambda x: x.GetIdx(), atom.GetNeighbors())) for atom in mol.GetAtoms()
     ]
     rd_bonds = list(mol.GetBonds())
-    bond_list = list(map(lambda b: (b.GetBeginAtomIdx(), b.GetEndAtomIdx()), rd_bonds))
-    bond_mapping = {key: val for key, val in enumerate(bond_list)}
+    bond_list = list(
+        map(lambda b: tuple(sorted((b.GetBeginAtomIdx(), b.GetEndAtomIdx()))), rd_bonds)
+    )
+    bond_mapping = {key: val for val, key in enumerate(bond_list)}
 
     return neighbor_list, bond_list, bond_mapping
 
 
 def get_ring_info(mol: Chem.Mol):
-    """
-    # Example: Benzene
-    >>> atoms_in_ring: [[0, 1, 2, 3, 4, 5]]
-    >>> bonds_in_ring: [[(0,1),(1,2),(2,3),(3,4),(4,5),(5,0)]]
-    >>> ring_neighbors_info: {0: [[(0, 5), (0, 1)]],
-                              1: [[(1, 2), (0, 1)]],
+    """Returns ring information of a molecule.
+
+    # Example: Anthracene
+    # (smiles: [H]c1c([H])c([H])c2c([H])c3c([H])c([H])c([H])c([H])c3c([H])c2c1[H])
+    >>> atoms_in_ring: ((0, 13, 12, 3, 2, 1), (4, 5, 10, 11, 12, 3), (6, 7, 8, 9, 10, 5))
+    >>> bonds_in_ring: [[(13, 0), (12, 13), (12, 3), (2, 3), (1, 2), (0, 1)],
+                        [(4, 5), (10, 5), (10, 11), (11, 12), (12, 3), (3, 4)],
+                        [(6, 7), (7, 8), (8, 9), (9, 10), (10, 5), (5, 6)]]
+    >>> ring_neighbors_info: {0: [[(0, 1), (13, 0)]],
+                              1: [[(0, 1), (1, 2)]],
                               2: [[(1, 2), (2, 3)]],
-                              3: [[(3, 4), (2, 3)]],
+                              3: [[(2, 3), (12, 3)], [(3, 4), (12, 3)]],
                               4: [[(3, 4), (4, 5)]],
-                              5: [[(0, 5), (4, 5)]]}
+                              5: [[(4, 5), (10, 5)], [(5, 6), (10, 5)]],
+                              6: [[(5, 6), (6, 7)]],
+                              7: [[(6, 7), (7, 8)]],
+                              8: [[(7, 8), (8, 9)]],
+                              9: [[(8, 9), (9, 10)]],
+                              10: [[(10, 11), (10, 5)], [(9, 10), (10, 5)]],
+                              11: [[(10, 11), (11, 12)]],
+                              12: [[(12, 13), (12, 3)], [(11, 12), (12, 3)]],
+                              13: [[(12, 13), (13, 0)]]}
     """
     new_z_list = np.array([atom.GetAtomicNum() for atom in mol.GetAtoms()])
     degree = [atom.GetDegree() for atom in mol.GetAtoms()]
@@ -145,7 +159,9 @@ def get_ring_info(mol: Chem.Mol):
     for ringN, bonds in enumerate(bond_rings):
         for bond in bonds:
             bObj = new_rd.GetBondWithIdx(bond)
-            bonds_in_ring[ringN].append((bObj.GetBeginAtomIdx(), bObj.GetEndAtomIdx()))
+            bonds_in_ring[ringN].append(
+                tuple(sorted((bObj.GetBeginAtomIdx(), bObj.GetEndAtomIdx())))
+            )
 
     ring_neighbors_info = {}
 
@@ -156,7 +172,9 @@ def get_ring_info(mol: Chem.Mol):
         ring_dict = dict([(i, []) for i in ringIDs])
         for bond in ring_bonds:
             for bRID in RingInfo.BondMembers(bond.GetIdx()):
-                ring_dict[bRID].append((bond.GetBeginAtomIdx(), bond.GetEndAtomIdx()))
+                ring_dict[bRID].append(
+                    tuple(sorted((bond.GetBeginAtomIdx(), bond.GetEndAtomIdx())))
+                )
         ring_neighbors_info[aID] = ring_dict.values()
 
     return atoms_in_ring, bonds_in_ring, ring_neighbors_info

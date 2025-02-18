@@ -12,7 +12,8 @@ def moSolve(prob, objs, verbose: bool):
     objvalues = []
     if not (prob.solver):
         prob.solver = pl.LpSolverDefault
-        prob.solver.msg = False  # suppress the output
+        if not verbose:
+            prob.solver.msg = False  # suppress the output
     for i, (_, obj, s) in enumerate(objs):
         prob.setObjective(obj)
         prob.sense = s
@@ -28,7 +29,7 @@ def moSolve(prob, objs, verbose: bool):
     return prob, statuses, objvalues
 
 
-def maximize_bo(
+def optimize_bo(
     atom_num,
     bond_num,
     period_list,
@@ -47,11 +48,12 @@ def maximize_bo(
         return np.array([chg_mol]), {}, (None, None, None)
 
     ### model construction
-    prob = pl.LpProblem("maximize_bo", pl.LpMaximize)
+    prob = pl.LpProblem("optimize_bo", pl.LpMaximize)
 
     verbose = kwargs.get("printOptLog", False)
     Xsingle = kwargs.get("HalogenConstraint", False)
-    cleanUp = kwargs.get("cleanUp", False) and (len(ring_neighbors_info) > 0)
+    cleanUp = kwargs.get("cleanUp", False)
+    RingConstr = cleanUp and (len(ring_neighbors_info) > 0)
     M_list = kwargs.get("MetalCenters", [])
 
     db_starts = kwargs.get("db_starts", [0] * bond_num)
@@ -162,7 +164,7 @@ def maximize_bo(
             prob += ve_constr == 2 * even[i], f"noRad_{i}"
 
         # Ring Constraint
-        if cleanUp and (i in ring_neighbors_info):
+        if RingConstr and (i in ring_neighbors_info):
             for n, neighbor_bond_list in enumerate(ring_neighbors_info[i]):
                 ring_constr = pl.LpAffineExpression(name=f"ring_{i}_{n}")
                 for ring_bond in neighbor_bond_list:
@@ -190,13 +192,13 @@ def maximize_bo(
     objs = sorted(objs, key=lambda x: x[0])
 
     # Pulp optimization
-    prob, statuses, objvalues = moSolve(prob, objs, True)
+    prob, statuses, objvalues = moSolve(prob, objs, verbose)
 
     # error handling
     for i, status in enumerate(statuses):
         if status != pl.LpStatusOptimal:
             print(
-                f"maximize_bo: Obj{i} Optimization failed. (status: {pl.LpStatus[status]})",
+                f"optimize_bo: Obj{i} Optimization failed. (status: {pl.LpStatus[status]})",
                 file=sys.stderr,
             )
             return None, None, (None, None, None)
@@ -252,7 +254,8 @@ def resolve_chg(
 
     verbose = kwargs.get("printOptLog", False)
     Xsingle = kwargs.get("HalogenConstraint", False)
-    cleanUp = kwargs.get("cleanUp", False) and (len(ring_neighbors_info) > 0)
+    cleanUp = kwargs.get("cleanUp", False)
+    RingConstr = cleanUp and (len(ring_neighbors_info) > 0)
     M_list = kwargs.get("MetalCenters", [])
 
     # bo: bond order
@@ -357,7 +360,7 @@ def resolve_chg(
             prob += ve_constr == 2 * even[i], f"noRad_{i}"
 
         # Ring Constraint
-        if cleanUp and (i in ring_neighbors_info):
+        if RingConstr and (i in ring_neighbors_info):
             for n, neighbor_bond_list in enumerate(ring_neighbors_info[i]):
                 ring_constr = pl.LpAffineExpression(name=f"ring_{i}_{n}")
                 for ring_bond in neighbor_bond_list:
@@ -381,7 +384,7 @@ def resolve_chg(
     objs = sorted(objs, key=lambda x: x[0])
 
     # Pulp optimization
-    prob, statuses, objvalues = moSolve(prob, objs, True)
+    prob, statuses, objvalues = moSolve(prob, objs, verbose)
 
     # error handling
     for i, status in enumerate(statuses):
@@ -418,6 +421,114 @@ def resolve_chg(
     return chg_list, bo_dict, (db_values, tb_values, t1_values)
 
 
+def compute_chg_and_bo(
+    molecule: Chem.Mol, chg_mol, resolve=True, cleanUp=True, **kwargs
+):
+    """
+    Compute the charge and bond order for a given molecule.
+
+    Args:
+        molecule (Chem.Mol): The RDKit Mol object containing atomic and bonding information (except bond orders).
+        chg_mol (int): The total charge of the molecule.
+        resolve (bool, optional): Whether to go through charge resolution step if needed. Defaults to True.
+        cleanUp (bool, optional): Whether to apply heuristics that cleans up the resulting molecular graph. Defaults to True.
+        **kwargs: Additional keyword arguments to be passed to the optimize_bo and resolve_chg functions.
+
+    Returns:
+        chg_list: the list of formal charges for each atom
+        bo_matrix: bond order matrix
+    """
+
+    (
+        period_list,
+        ve_list,
+        z_list,
+        bond_list,
+        bond_mapping,
+        neighbor_list,
+        ring_neighbors_info,
+        en_list,
+    ) = get_lists(molecule)
+
+    atom_num, bond_num = len(z_list), len(bond_list)
+    eIsEven = int(np.sum(z_list) - chg_mol) % 2 == 0
+    resolve_step = 0
+    kwargs["cleanUp"] = cleanUp
+
+    chg_list, bo_dict, raw_outputs = optimize_bo(
+        atom_num,
+        bond_num,
+        period_list,
+        ve_list,
+        bond_list,
+        bond_mapping,
+        neighbor_list,
+        en_list,
+        ring_neighbors_info,
+        chg_mol,
+        eIsEven,
+        **kwargs,
+    )
+
+    # early stop
+    if bo_dict is None and chg_list is None:
+        return None, None
+
+    # check charge separation
+    chg_sep = np.any(chg_list > 0) and np.any(chg_list < 0)
+
+    # charge resolution
+    if resolve and chg_sep:
+        bo_sum = np.zeros(atom_num)
+        for p, q in bo_dict.keys():
+            bo_sum[p] += bo_dict[(p, q)]
+            bo_sum[q] += bo_dict[(p, q)]
+
+        # TODO: Check the condition for overcharged atoms
+        # 1. period > 2
+        # 2. non-zero charge on itself
+        overcharged = (period_list > 2) & (np.abs(chg_list) != 0)
+
+        chg_list, bo_dict, _ = resolve_chg(
+            atom_num,
+            bond_num,
+            period_list,
+            ve_list,
+            bond_list,
+            bond_mapping,
+            neighbor_list,
+            en_list,
+            ring_neighbors_info,
+            chg_mol,
+            eIsEven,
+            overcharged,
+            raw_outputs[0],
+            raw_outputs[1],
+            raw_outputs[2],
+            stepIdx=resolve_step,
+            **kwargs,
+        )
+
+        resolve_step += 1
+
+        ### TODO: Do resolve_chg several times if needed
+
+        # error handling
+        if bo_dict is None and chg_list is None:
+            return None, None
+
+    bo_matrix = np.zeros((atom_num, atom_num))
+
+    assert bo_dict is not None
+    assert chg_list is not None
+
+    for p, q in bo_dict.keys():
+        bo_matrix[p][q] = bo_dict[(p, q)]
+        bo_matrix[q][p] = bo_dict[(p, q)]
+
+    return chg_list, bo_matrix
+
+
 def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, cleanUp=True, **kwargs):
     (
         period_list,
@@ -435,7 +546,7 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, cleanUp=True, **kw
     resolve_step = 0
     kwargs["cleanUp"] = cleanUp
 
-    chg_list0, bo_dict0, raw_outputs = maximize_bo(
+    chg_list0, bo_dict0, raw_outputs = optimize_bo(
         atom_num,
         bond_num,
         period_list,
@@ -509,112 +620,3 @@ def compute_chg_and_bo_debug(molecule, chg_mol, resolve=True, cleanUp=True, **kw
                 bo_matrix1[q][p] = bo_dict1[(p, q)]
 
     return chg_list0, bo_matrix0, chg_list1, bo_matrix1
-
-
-def compute_chg_and_bo(
-    molecule: Chem.Mol, chg_mol, resolve=True, cleanUp=True, **kwargs
-):
-    """
-    Compute the charge and bond order for a given molecule.
-
-    Args:
-        molecule (Chem.Mol): The RDKit Mol object containing atomic and bonding information (except bond orders).
-        chg_mol (int): The total charge of the molecule.
-        resolve (bool, optional): Whether to go through charge resolution step if needed. Defaults to True.
-        cleanUp (bool, optional): Whether to apply heuristics that cleans up the resulting molecular graph. Defaults to True.
-        **kwargs: Additional keyword arguments to be passed to the maximize_bo and resolve_chg functions.
-
-    Returns:
-        tuple: A tuple containing the list of charges for each atom and the bond order matrix.::
-
-    """
-
-    (
-        period_list,
-        ve_list,
-        z_list,
-        bond_list,
-        bond_mapping,
-        neighbor_list,
-        ring_neighbors_info,
-        en_list,
-    ) = get_lists(molecule)
-
-    atom_num, bond_num = len(z_list), len(bond_list)
-    eIsEven = int(np.sum(z_list) - chg_mol) % 2 == 0
-    resolve_step = 0
-    kwargs["cleanUp"] = cleanUp
-
-    chg_list, bo_dict, raw_outputs = maximize_bo(
-        atom_num,
-        bond_num,
-        period_list,
-        ve_list,
-        bond_list,
-        bond_mapping,
-        neighbor_list,
-        en_list,
-        ring_neighbors_info,
-        chg_mol,
-        eIsEven,
-        **kwargs,
-    )
-
-    # early stop
-    if bo_dict is None and chg_list is None:
-        return None, None
-
-    assert bo_dict is not None
-    assert chg_list is not None
-
-    # check charge separation
-    chg_sep = np.any(chg_list > 0) and np.any(chg_list < 0)
-
-    # charge resolution
-    if resolve and chg_sep:
-        bo_sum = np.zeros(atom_num)
-        for p, q in bo_dict.keys():
-            bo_sum[p] += bo_dict[(p, q)]
-            bo_sum[q] += bo_dict[(p, q)]
-
-        # TODO: Check the condition for overcharged atoms
-        # 1. period > 2
-        # 2. non-zero charge on itself
-        overcharged = (period_list > 2) & (np.abs(chg_list) != 0)
-
-        chg_list, bo_dict, raw_outputs2 = resolve_chg(
-            atom_num,
-            bond_num,
-            period_list,
-            ve_list,
-            bond_list,
-            bond_mapping,
-            neighbor_list,
-            en_list,
-            ring_neighbors_info,
-            chg_mol,
-            eIsEven,
-            overcharged,
-            raw_outputs[0],
-            raw_outputs[1],
-            raw_outputs[2],
-            stepIdx=resolve_step,
-            **kwargs,
-        )
-
-        resolve_step += 1
-
-        # error handling
-        if bo_dict is None and chg_list is None:
-            return None, None
-
-    bo_matrix = np.zeros((atom_num, atom_num))
-
-    assert bo_dict is not None
-    assert chg_list is not None
-
-    for p, q in bo_dict.keys():
-        bo_matrix[p][q] = bo_dict[(p, q)]
-        bo_matrix[q][p] = bo_dict[(p, q)]
-
-    return chg_list, bo_matrix
