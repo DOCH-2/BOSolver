@@ -3,7 +3,7 @@ import pathlib
 from rdkit import Chem
 import numpy as np
 
-from compute_chg_and_bo_pulp import compute_chg_and_bo
+from compute_chg_and_bo import compute_chg_and_bo
 from utils.coord2adj import BondPerception, CovalentRadius
 
 

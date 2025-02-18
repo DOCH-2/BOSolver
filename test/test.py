@@ -2,10 +2,10 @@ from rdkit import Chem
 from rdkit.Chem import AllChem
 import sys
 
-sys.path.append("../BOSolver")
+sys.path.append("../src/BOSolver")
 
 from utils import chem, coord2adj
-import compute_chg_and_bo_pulp
+import compute_chg_and_bo
 import bosolve
 
 mol = Chem.MolFromSmiles("CC")
@@ -36,7 +36,7 @@ for bond in mol.GetBonds():
 
 print("-------------")
 
-chg_list, bo_matrix = compute_chg_and_bo_pulp.compute_chg_and_bo(mol, 0)
+chg_list, bo_matrix = compute_chg_and_bo.compute_chg_and_bo(mol, 0)
 
 print(chg_list)
 print(bo_matrix)
