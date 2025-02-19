@@ -6,7 +6,7 @@ import numpy as np
 from utils.chem import Chem, get_lists
 
 
-def moSolve(prob, objs, verbose: bool):
+def moSolve(prob, objs, verbose: bool, log_prefix=None):
     """multi-objective optimization. Simple modification of pulp.LpProblem.sequentialSolve"""
     statuses = []
     objvalues = []
@@ -21,7 +21,7 @@ def moSolve(prob, objs, verbose: bool):
         statuses.append(status)
         objvalues.append(obj.value())
         if verbose:
-            prob.writeLP(f"record_obj{i}.lp")
+            prob.writeLP(f"{log_prefix}_record_obj{i}.lp")
         if s == pl.const.LpMinimize:
             prob += obj <= obj.value(), f"Obj_{i}"
         elif s == pl.const.LpMaximize:
@@ -50,10 +50,12 @@ def optimize_bo(
     ### model construction
     prob = pl.LpProblem("optimize_bo", pl.LpMaximize)
 
+    ### option parsing
     verbose = kwargs.get("printOptLog", False)
-    Xsingle = kwargs.get("HalogenConstraint", False)
+
     cleanUp = kwargs.get("cleanUp", False)
     RingConstr = cleanUp and (len(ring_neighbors_info) > 0)
+    Xsingle = cleanUp and kwargs.get("HalogenConstraint", False)
     M_list = kwargs.get("MetalCenters", [])
 
     db_starts = kwargs.get("db_starts", [0] * bond_num)
@@ -176,23 +178,23 @@ def optimize_bo(
     prob += chg_constr == chg_mol, "chg_consv"
 
     od_priority = 1  # octet distance priority
-    bo_priority = 2  # bond order maximization priority
-    chg_priority = 3  # charge separation priority
+    chg_priority = 2  # charge separation priority
+    bo_priority = 3  # bond order maximization priority
     en_priority = 4  # electronegativity priority
 
-    if kwargs.get("mode", "") == "fc":
-        bo_priority, chg_priority = chg_priority, bo_priority
+    if kwargs.get("fcmode", False):
+        od_priority, chg_priority = chg_priority, od_priority
 
     objs = [
         (od_priority, min_od_obj, pl.LpMinimize),
-        (bo_priority, max_bo_obj, pl.LpMaximize),
         (chg_priority, min_fc_obj, pl.LpMinimize),
+        (bo_priority, max_bo_obj, pl.LpMaximize),
         # (en_priority, min_en_obj, pl.LpMinimize),
     ]
     objs = sorted(objs, key=lambda x: x[0])
 
     # Pulp optimization
-    prob, statuses, objvalues = moSolve(prob, objs, verbose)
+    prob, statuses, objvalues = moSolve(prob, objs, verbose, "optimize_bo")
 
     # error handling
     for i, status in enumerate(statuses):
@@ -372,8 +374,8 @@ def resolve_chg(
     prob += chg_constr == chg_mol, "chg_consv"
 
     ### optimization
-    bo_priority = 2  # bond order maximization priority
     chg_priority = 1  # charge separation priority
+    bo_priority = 2  # bond order maximization priority
     en_priority = 3  # electronegativity priority
 
     objs = [
@@ -384,7 +386,7 @@ def resolve_chg(
     objs = sorted(objs, key=lambda x: x[0])
 
     # Pulp optimization
-    prob, statuses, objvalues = moSolve(prob, objs, verbose)
+    prob, statuses, objvalues = moSolve(prob, objs, verbose, "resolve_chg")
 
     # error handling
     for i, status in enumerate(statuses):
@@ -434,6 +436,14 @@ def compute_chg_and_bo(
         cleanUp (bool, optional): Whether to apply heuristics that cleans up the resulting molecular graph. Defaults to True.
         **kwargs: Additional keyword arguments to be passed to the optimize_bo and resolve_chg functions.
 
+        kwargs include:
+        HaloGenConstraint (bool, optional): Whether to apply the halogen constraint (Halogens are considered to be terminal). Defaults to False.
+                                            If cleanUp is False, this constraint is not applied.
+        MetalCenters (list, optional): The list of atom indices that are considered to be metal centers.
+                                    Bonds of metal atoms are forced to be single bonds. Defaults to [].
+        fcmode (bool, optional): Whether to set formal charge separation minimization as the primary objective. Defaults to False.
+
+
     Returns:
         chg_list: the list of formal charges for each atom
         bo_matrix: bond order matrix
@@ -453,7 +463,7 @@ def compute_chg_and_bo(
     atom_num, bond_num = len(z_list), len(bond_list)
     eIsEven = int(np.sum(z_list) - chg_mol) % 2 == 0
     resolve_step = 0
-    kwargs["cleanUp"] = cleanUp
+    kwargs["cleanUp"] = cleanUp  # suppress
 
     chg_list, bo_dict, raw_outputs = optimize_bo(
         atom_num,

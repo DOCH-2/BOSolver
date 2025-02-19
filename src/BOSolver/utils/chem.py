@@ -19,21 +19,26 @@ EN_TABLE = {
     "Mg": 1.293,
     "A1": 1.613,
     "Si": 1.916,
-    "P": 2.253,
-    # "P": 3.053, # phosphorus, adjusted
-    "S": 2.589,
-    # "S": 3.089, # sulfur, adjusted
-    "Cl": 2.869,
-    # "Cl": 3.369, # Halogen, adjusted
+    "P": 2.253,  # phosphorus, adjusted
+    # "P": 3.053,
+    "S": 2.589,  # sulfur, adjusted
+    # "S": 3.089,
+    "Cl": 2.869,  # Halogen, adjusted
+    # "Cl": 3.369,
     "Ar": 3.242,
     "K": 0.734,
     "Ca": 1.034,
+    "Fe": 1.80,
+    "Co": 1.84,
+    "Ni": 1.88,
+    "Cu": 1.85,
+    "Zn": 1.588,
     "Ga": 1.756,
     "Ge": 1.994,
     "As": 2.211,
     "Se": 2.424,
-    "Br": 2.685,
-    # "Br": 3.285, # Halogen, adjusted
+    "Br": 2.685,  # Halogen, adjusted
+    # "Br": 3.285,
     "Kr": 2.966,
     "Rb": 0.706,
     "Sr": 0.963,
@@ -41,10 +46,14 @@ EN_TABLE = {
     "Sn": 1.824,
     "Sb": 1.984,
     "Te": 2.158,
-    "I": 2.359 + 1,
-    # "I": 3.159, # Halogen, adjusted
+    "I": 2.359 + 1,  # Halogen, adjusted
+    # "I": 3.159,
     "Xe": 2.582,
-}  # J. Am. Chem. Soc. 1989, 111, 25, 9003–9014
+}
+# Reference:
+# J. Am. Chem. Soc. 1989 111 (25), 9003–9014
+# J. Am. Chem. Soc. 2000 122 (12), 2780-2783
+# J. Am. Chem. Soc. 2000 122 (21), 5132-5137
 
 
 class MolData(
