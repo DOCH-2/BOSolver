@@ -1,0 +1,31 @@
+[project]
+name = "BOSolver"
+version = "0.1.0"
+description = "BOSolver: A Python package for solving Bond Order (and Formal Charge) Assignment based on Integer Linear Programming"
+authors = [
+  { name = "Jinwon Lee", email = "lee.jinwon@kaist.ac.kr" },
+  { name = "Kyounhoon Lee", email = "IDONTKNOW@kaist.ac.kr" },
+]
+maintainers = [{ name = "Jinwon Lee", email = "lee.jinwon@kaist.ac.kr" }]
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = [
+  "rdkit>=2024.09",
+  "pulp>=2.8.0",
+  "numpy>=1.26.4",
+  "scipy>=1.15.1",
+]
+
+
+[project.urls]
+Repository = "https://github.com/DOCH-2/BOSolver.git"
+
+
+[project.scripts]
+bosolve = "bosolve:main_cli"
+
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

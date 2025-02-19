@@ -140,6 +140,7 @@ def bosolve_argparser():
         dest="MetalCenters",
         type=int,
         help="atom indices for metal centers",
+        default=[],
     )
     return parser
 
@@ -184,6 +185,10 @@ def main(args):
         sys.stdout = sys.__stdout__
 
     return outtext
+
+
+def main_cli():
+    main(bosolve_argparser().parse_args())
 
 
 if __name__ == "__main__":
