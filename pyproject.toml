@@ -11,7 +11,7 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 dependencies = [
-  "rdkit>=2024.09",
+  "rdkit>=2024.09.4",
   "pulp>=2.8.0",
   "numpy>=1.26.4",
   "scipy>=1.15.1",

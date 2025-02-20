@@ -10,19 +10,17 @@ params = Chem.SmilesParserParams()
 params.removeHs = False
 
 
-def smi2xyz2smi_test(smi, chg, additional_args=[]):
+def smi2xyz2smi_test(smi, chg, **kwargs):
     mol = Chem.MolFromSmiles(smi, params=params)
     mol = Chem.AddHs(mol)
     AllChem.EmbedMolecule(mol)
     AllChem.MMFFOptimizeMolecule(mol)
 
     xyz = Chem.MolToXYZBlock(mol)
-
-    parser = bosolve.bosolve_argparser()
-    args = parser.parse_args([str(xyz), str(chg), "-o", "smi"] + additional_args)
-    output = bosolve.main(args)
-
-    mol_restored = Chem.MolFromSmiles(output, params=params)
+    mol_restored = Chem.MolFromXYZBlock(xyz)
+    mol_restored = bosolve.perceiveConn(mol_restored)
+    mol_restored = bosolve.assignBO(mol_restored, chg, **kwargs)
+    Chem.SanitizeMol(mol_restored)
 
     smi_ori = Chem.MolToSmiles(mol)
     smi_res = Chem.MolToSmiles(mol_restored)
@@ -53,7 +51,7 @@ def test_3():
     chg = 1
 
     odmode = smi2xyz2smi_test(smi, chg)
-    fcmode = smi2xyz2smi_test(smi, chg, additional_args=["-fc"])
+    fcmode = smi2xyz2smi_test(smi, chg, fcmode=True)
     assert (odmode is False) and (fcmode is True)
 
 
@@ -71,14 +69,12 @@ def test_5():
     metal_centers = []
 
     xyzfile = "./cobalt_ligand.xyz"
-    parser = bosolve.bosolve_argparser()
-    args = parser.parse_args(
-        [xyzfile, str(chg), "-o", "smi"]
-        + ["-fc", "--metalCenter", " ".join(metal_centers)]
+    mol_restored = Chem.MolFromXYZFile(xyzfile)
+    mol_restored = bosolve.perceiveConn(mol_restored)
+    mol_restored = bosolve.assignBO(
+        mol_restored, chg, metal_centers=metal_centers, fcmode=True
     )
-    output = bosolve.main(args)
-
-    mol_restored = Chem.MolFromSmiles(output, params=params)
+    Chem.SanitizeMol(mol_restored)
 
     smi_res = Chem.MolToSmiles(mol_restored)
 
