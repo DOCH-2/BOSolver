@@ -13,8 +13,8 @@ def perceiveConn(
     returns rdkit.Chem.Mol object with connectivity information.
     All bond orders are set to rdkit.Chem.BondType.UNSPECIFIED.
     """
-    algo = algorithm(**kwargs)
-    return algo(mol)
+    algo = algorithm
+    return algo(mol, **kwargs)
 
 
 def assignBO(mol: Chem.Mol, chg: int, **kwargs):
