@@ -2,10 +2,7 @@ from collections import namedtuple
 import numpy as np
 from rdkit import Chem
 
-
-PT = Chem.GetPeriodicTable()
-
-EN_TABLE = {
+_EN_TABLE = {
     "H": 2.300,
     "Li": 0.912,
     "Be": 1.576,
@@ -50,10 +47,28 @@ EN_TABLE = {
     # "I": 3.159,
     "Xe": 2.582,
 }
+
+
 # Reference:
 # J. Am. Chem. Soc. 1989 111 (25), 9003–9014
 # J. Am. Chem. Soc. 2000 122 (12), 2780-2783
 # J. Am. Chem. Soc. 2000 122 (21), 5132-5137
+#
+class ElectronegativityTable(dict):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.update(_EN_TABLE)
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            key = PT.GetElementSymbol(key)
+
+        if key in self:
+            return super().__getitem__(key)
+        else:
+            # if key is not in the table, it is probably a metal
+            # give a low value, whtich we set as 2.0 here
+            return 2.0
 
 
 class MolData(
@@ -93,6 +108,10 @@ class MolData(
             ring_neighbors_info,
             en_list,
         )
+
+
+PT = Chem.GetPeriodicTable()
+EN_TABLE = ElectronegativityTable()
 
 
 def get_period_ve_list(mol: Chem.Mol):

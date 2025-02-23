@@ -1,10 +1,9 @@
 import pathlib
 import argparse
-import textwrap
 
 from rdkit import Chem
 
-from bosolve import perceiveConn, assignBO
+from BOSolver.bosolve import perceiveConn, assignBO
 
 
 class LineWidthFormatter(argparse.HelpFormatter):
@@ -130,8 +129,6 @@ def main(args):
     else:
         raise ValueError(f"Invalid output format: {out_format}")
 
-    print(outtext)
-
     if args.saveto is not None:
         if pathlib.Path(args.saveto).exists():
             print(f"File {args.saveto} already exists. Overwrite.")
@@ -146,9 +143,8 @@ def main(args):
 
 def main_cli():
     parser = bosolve_argparser()
-    main(parser.parse_args())
+    print(main(parser.parse_args()))
 
 
 if __name__ == "__main__":
-    # main(bosolve_argparser().parse_args())
     main_cli()

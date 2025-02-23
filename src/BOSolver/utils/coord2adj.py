@@ -3,7 +3,7 @@
 import numpy as np
 from scipy import spatial
 
-from .chem import PT, Chem
+from BOSolver.utils.chem import PT, Chem
 
 _ACERXN_Rcov_TABLE = dict(
     [
@@ -68,7 +68,7 @@ class CovalentRadius(BondPerception):
 
     _default_r_table = DEFAULT_Rcov_TABLE()
 
-    def __init__(self, relTol=1.15, absTol=0.45):
+    def __init__(self, relTol=1.1, absTol=0.0):
         self.relTol = relTol
         self.absTol = absTol
         self.R_TABLE = CovalentRadius._default_r_table
@@ -86,7 +86,7 @@ class CovalentRadius(BondPerception):
 
         return adj, dist_mat
 
-    def __call__(self, mol: Chem.Mol):
+    def __call__(self, mol: Chem.Mol, **kwargs) -> Chem.Mol:
         adj, _ = self.determine_adj(mol)
         i, j = np.nonzero(adj > 0)
         adj_list = np.vstack((i[i < j], j[i < j])).T.tolist()  # only i < j

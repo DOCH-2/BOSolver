@@ -1,13 +1,9 @@
-import sys
+import BOSolver
+import pathlib
+from BOSolver.cli import main, bosolve_argparser
 
-sys.path.append("../../src/BOSolver/")
-
-from bosolve import main, bosolve_argparser
-
-from rdkit import Chem
-from rdkit.Chem import AllChem
-
-COMMAND_STR = "CCO.xyz 0 -o smi"
+pathtoclitest = pathlib.Path(__file__)
+COMMAND_STR = f"{pathtoclitest.parent / 'CCO.xyz'} 0 -o smi"
 COMMAND_OPTION = COMMAND_STR.split()
 
 parser = bosolve_argparser()

@@ -3,7 +3,7 @@ import sys
 import pulp as pl
 import numpy as np
 
-from utils.chem import Chem, get_lists
+from BOSolver.utils.chem import Chem, get_lists
 
 
 def moSolve(prob, objs, verbose: bool, log_prefix=None):
@@ -29,6 +29,7 @@ def moSolve(prob, objs, verbose: bool, log_prefix=None):
     return prob, statuses, objvalues
 
 
+# FIXME: BOSolver cannot solve a system with odd number of electrons
 def optimize_bo(
     atom_num,
     bond_num,
@@ -185,6 +186,7 @@ def optimize_bo(
     if kwargs.get("fcmode", False):
         od_priority, chg_priority = chg_priority, od_priority
 
+    # TODO: use electron negativity as the objective function on the request
     objs = [
         (od_priority, min_od_obj, pl.LpMinimize),
         (chg_priority, min_fc_obj, pl.LpMinimize),
