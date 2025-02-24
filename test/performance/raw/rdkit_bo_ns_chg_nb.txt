@@ -1,1 +1,0 @@
-[H]C(=NN=c1sc2c([H])c(C([H])([H])[H])c([H])c([H])c2n1C([H])([H])c1c([H])c([H])c([H])c([H])c1[H])c1c([H])c([N+](=O)[O-])c([O-])c([H])c1[O-]	Cc1ccc2c(c1)s/c(=N/N=C/c1cc([N+](=O)[O-])c([O-])cc1[O-])n2Cc1ccccc1
