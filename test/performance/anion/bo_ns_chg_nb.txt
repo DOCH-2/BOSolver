@@ -1,0 +1,1 @@
+[H]c1nc(N([H])[H])c([H])c(-c2c([H])c([H])n3c([H])c(N([H])C(=O)N([H])[C-]([H])[C-]([H])[H])nc3c2[H])c1[H] [H]C1=NC(N([H])[H])=C([H])C(C2=C([H])C3=NC(N([H])C(=O)N([H])[C-]([H])[C-]([H])[H])=C([H])N3C([H])=C2[H])=C1[H]

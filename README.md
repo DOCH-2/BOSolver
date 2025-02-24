@@ -1,6 +1,4 @@
-# BOSolver
-
-Bond Order Solver utilizing linear integer programming
+# Bond Order Solver utilizing Integer Linear Programming
 
 BOSolver calculates the CORRECT bond orders of bonds between atoms from XYZ file
 of molecule(s).

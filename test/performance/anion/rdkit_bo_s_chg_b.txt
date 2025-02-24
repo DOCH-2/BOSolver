@@ -1,0 +1,2 @@
+[H]c1c([H])c(S(=O)(=O)[C-]([H])C([H])([H])S(=O)[C-]([H])[H])c2c([H])sc([H])c2c1[H]	[H]C1=C2C([H])=C([H])C([H])=C(S(=O)(=O)[C-]([H])C([H])([H])S(=O)[C-]([H])[H])C2=C([H])S1
+[H]O[C-]([H])c1c([H])nc(S(=O)C([H])([H])c2c([H])c([H])c(Cl)c([H])c2[H])n1[C-]([H])[H]	[H]O[C-]([H])C1=C([H])N=C(S(=O)C([H])([H])C2=C([H])C([H])=C(Cl)C([H])=C2[H])N1[C-]([H])[H]
