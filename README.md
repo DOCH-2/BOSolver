@@ -12,7 +12,7 @@ Thanks to the ILP formulation, BOSolver has multiple strength points such as,
 - BOSolver can handle complex molecules with
 multiple resonance structures within *definite* time.
 - BOSolver preserves the total charge of the molecule.
-- BOSolver is free from the loopholes of heuristics-based methods.
+- BOSolver is free from loopholes of heuristics-based methods.
 
 BOSolver relies on `RDKit` for the molecular representation,
 and BOSolver can assign correct bond orders to `RDKit.Chem.Mol` objects

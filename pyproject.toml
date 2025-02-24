@@ -4,7 +4,7 @@ version = "0.0.1"
 description = "BOSolver: A Python package for solving Bond Order (and Formal Charge) Assignment based on Integer Linear Programming"
 authors = [
   { name = "Jinwon Lee", email = "lee.jinwon@kaist.ac.kr" },
-  { name = "Kyounhoon Lee", email = "kyunghoonlee@kaist.ac.kr" },
+  { name = "Kyunhoon Lee", email = "kyunghoonlee@kaist.ac.kr" },
 ]
 maintainers = [{ name = "Jinwon Lee", email = "lee.jinwon@kaist.ac.kr" }]
 readme = "README.md"
