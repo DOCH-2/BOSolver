@@ -1,6 +1,6 @@
 [project]
 name = "BOSolver"
-version = "0.0.1"
+version = "0.0.2"
 description = "BOSolver: A Python package for solving Bond Order (and Formal Charge) Assignment based on Integer Linear Programming"
 authors = [
   { name = "Jinwon Lee", email = "jinwonlee0310@gmail.com" },
