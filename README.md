@@ -41,9 +41,17 @@ install with pip.
 and then run
 
 ```bash
->>> cd BOSolver
+>>> cd BOSolver # move to the top directory
 >>> python -m build
 >>> pip install dist/BOSolver.xxx.whl
+```
+
+To check whether the installation is properly done,
+you can use `pytest`. Run `pytest` at the top directory of the repository.
+
+```bash
+>>> cd BOSolver # move to the top directory
+>>> pytest
 ```
 
 ## Usage

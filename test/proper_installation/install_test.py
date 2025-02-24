@@ -1,6 +1,8 @@
+import pathlib
+from sys import path
+
 from rdkit import Chem
 from rdkit.Chem import AllChem
-import sys
 
 from BOSolver import bosolve
 
@@ -96,7 +98,9 @@ def test_5():
     chg = 0
     metal_centers = [0]
 
-    xyzfile = "./platinum_ligand.xyz"
+    xyzfile = (
+        (pathlib.Path(__file__).parent / "./platinum_ligand.xyz").absolute().as_posix()
+    )
     assert xyz2smi_test(smi, xyzfile, chg, fcmode=True, metal_centers=metal_centers)
 
 
@@ -106,7 +110,9 @@ def test_6():
     chg = 0
     metal_centers = [0]
 
-    xyzfile = "./zirconium_ligand.xyz"  # haptic coordination is not supported.
+    xyzfile = (
+        (pathlib.Path(__file__).parent / "./zirconium_ligand.xyz").absolute().as_posix()
+    )  # haptic coordination is not supported.
     assert (
         xyz2smi_test(smi, xyzfile, chg, fcmode=True, metal_centers=metal_centers)
         is False
@@ -121,7 +127,9 @@ def test_7():
     chg = 0
     metal_centers = [0]
 
-    xyzfile = "./titanium_ligand.xyz"
+    xyzfile = (
+        (pathlib.Path(__file__).parent / "./titanium_ligand.xyz").absolute().as_posix()
+    )
     try:
         xyz2smi_test(smi, xyzfile, chg, fcmode=True, metal_centers=metal_centers)
     except RuntimeError:
