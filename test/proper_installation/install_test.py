@@ -105,7 +105,10 @@ def test_5():
 
 
 def test_6():
-    """Metal Center Test 2"""
+    """Metal Center Test 2
+
+    This example shows that the haptic coordination is not supported yet.
+    """
     smi = "THIS SHOULD FAIL"
     chg = 0
     metal_centers = [0]
@@ -119,24 +122,19 @@ def test_6():
     )
 
 
-# FIXME: test for titanium_ligand.xyz is not working
-# BOSolver cannot solve a system with odd number of electrons
 def test_7():
-    """Odd number electrons Test"""
-    smi = "THIS FAILS"
-    chg = 0
+    """Metal Center Test 3"""
+    smi = "[H]c1c(C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H])c([H])c2c(c1C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H])O[Ti-]13([O+]4C([H])([H])C([H])([H])C([H])([H])C([H])([H])C4([H])[H])Oc4c(C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H])c([H])c(C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H])c([H])c4C([H])([H])[N+]1(C2([H])[H])C([H])([H])c1c([H])c(C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H])c([H])c(C(C([H])([H])[H])(C([H])([H])[H])C([H])([H])[H])c1O3"
+    chg = 1  # this turns out to be a cation
     metal_centers = [0]
 
     xyzfile = (
         (pathlib.Path(__file__).parent / "./titanium_ligand.xyz").absolute().as_posix()
     )
-    try:
+    assert (
         xyz2smi_test(smi, xyzfile, chg, fcmode=True, metal_centers=metal_centers)
-    except RuntimeError:
-        # it fails...
-        assert True
-    else:
-        assert False
+        is True
+    )
 
 
 if __name__ == "__main__":
