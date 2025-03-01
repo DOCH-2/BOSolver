@@ -24,18 +24,19 @@ This will parse json file into separate xyz file. We do this for parallelization
 
 > This creates ~*2M* xyz files. Be cautious of I/O overload.
 
-3. name_chg_smi_neutral
-run `bash name_chg_smi_neutral.sh`
-This will create the label file (which contains their names(cid), total charges, and PubChem SMILES)
-
-4. neutral_tot.withRadicalXXXXXX
+3. neutral_tot.withRadicalXXXXXX
 run `find neutral -type f > neutral_tot.withRadicalXXXXXX`
 This simply records paths to xyz files.
 
-5. neutral_tot.woRadicalXXXXXX
+4. neutral_tot.woRadicalXXXXXX
 run `python ./radical_check.py > neutral_tot.woRadicalXXXXXX`
 This will select xyz files of systems with even number of electrons only.
 
-6. neutral_sel.woRadicalXXXXXX & name_chg_smi_neutral
+5. neutral_sel.woRadicalXXXXXX & name_chg_smi_neutral
 run `python ./data_selector.py`
 This will randomly choose 1M xyz files for the test.
+
+6. name_chg_smi_neutral
+run `bash name_chg_smi.sh`
+This will create the label file (which contains their names(cid), total charges, and PubChem SMILES)
+

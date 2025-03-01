@@ -1,8 +1,10 @@
+import pathlib
 from rdkit import Chem
 
 PT = Chem.GetPeriodicTable()
 # with open("./neutral_tot.limited.withRadical") as f:
-with open("./neutral_tot.withRadical250221") as f:
+fname = sorted(pathlib.Path(".").glob("neutral_tot.withRadical*"))[-1]
+with open(fname) as f:
     for xyz in f:
         fdir = xyz.strip()
         symbols = []

@@ -1,13 +1,14 @@
 #!/bin/bash
 shopt -s expand_aliases
+source ~/.bashrc
 
 TESTSET="PubChemQC"
-source $PWD/${TESTSET}/setup.sh
+source $PWD/setup.sh
 
 NPROCS=8 # depends on CPU of your local machine
 echo "NPROCS: $NPROCS"
 
-DNAME="whatever_you_want" # modify this
+DNAME="exp250227" # modify this
 
 #XYZ2MOL=1 # uncomment this line if you want to test xyz2mol
 #INDIGOX=1 # uncomment this line if you want to test IndigoX
@@ -29,9 +30,11 @@ fi
 
 CHGSTR="neutral"
 SNAME="${CHGSTR}_sel"
+LOG="${DNAME}/LOG.txt"
+ERR="${DNAME}/ERR.txt"
 
-SEL="${PWD}/${TESTSET}/test-list/${SNAME}"
-EXP="${PWD}/${TESTSET}/${DNAME}"
+SEL="${PWD}/test-list/${SNAME}"
+EXP="${PWD}/${DNAME}"
 
 mkdir -p $EXP
 

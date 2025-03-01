@@ -32,6 +32,11 @@ Refer to `test-onlocal.sh` for an example.
 >>> source run_parallel.sh
 ```
 
+[!NOTE]
+> Make sure you have proper symbolic link or copied file of
+> "DATA/PubChemQC/name_chg_smi_neutral_sel.woRadicalXXXXXX"
+
+
 3. Run the following codes to analyze the result.
 
 ```bash

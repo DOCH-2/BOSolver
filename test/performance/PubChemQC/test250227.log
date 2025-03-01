@@ -1,0 +1,31 @@
+BOS
+
+CondaError: Run 'conda init' before 'conda activate'
+
+NPROCS: 8
+Start time: Fri Feb 28 14:11:51 KST 2025
+End time: Fri Feb 28 18:33:18 KST 2025
+
+X2M
+
+CondaError: Run 'conda init' before 'conda activate'
+
+NPROCS: 8
+Start time: Fri Feb 28 18:33:19 KST 2025
+End time: Sat Mar  1 00:09:45 KST 2025
+
+IGX
+
+CondaError: Run 'conda init' before 'conda activate'
+
+NPROCS: 8
+Start time: Sat Mar  1 00:09:46 KST 2025
+End time: Sat Mar  1 05:22:00 KST 2025
+
+OBB
+
+CondaError: Run 'conda init' before 'conda activate'
+
+NPROCS: 8
+Start time: Sat Mar  1 05:22:01 KST 2025
+End time: Sat Mar  1 09:26:44 KST 2025

@@ -23,15 +23,17 @@ function data_select() {
 export -f name_chg_smi
 export -f data_select
 
-tot=name_chg_smi_neutral_tot.withRadical250221
-#
-#if [ -f $tot ]; then
-#  rm $tot
-#fi
-#
-#parallel name_chg_smi :::: ./neutral_tot.withRadical250221 >$tot
+#XXXXXX="250227"
 
-lookfrom=./neutral_sel.woRadical250221
-sel=name_chg_smi_neutral_sel.woRadical250221
+tot=name_chg_smi_neutral_tot.withRadical$XXXXXX
+
+if [ -f $tot ]; then
+  rm $tot
+fi
+
+parallel name_chg_smi :::: ./neutral_tot.withRadical$XXXXXX >$tot
+
+lookfrom=./neutral_sel.woRadical$XXXXXX
+sel=name_chg_smi_neutral_sel.woRadical$XXXXXX
 
 parallel data_select {} $lookfrom :::: $tot >$sel
