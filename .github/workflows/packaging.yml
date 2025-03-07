@@ -1,4 +1,4 @@
-name: Build and Install (Pip) Test
+name: Build and Install Test
 
 on: [push]
 
