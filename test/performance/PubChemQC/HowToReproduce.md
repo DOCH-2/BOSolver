@@ -7,6 +7,8 @@ Follow the instruction in `../DATA/PubChemQC/HowToPrepare.md` to prepare data.
 
 - Performance test for BOSolver, xyz2mol, Openbabel, and Indigox.
 
+Run
+
 ```bash
 >>> export SEL=$CWD/test-list/neutral_sel
 >>> export EXP=$CWD/whatever_you_want/
@@ -17,7 +19,7 @@ Follow the instruction in `../DATA/PubChemQC/HowToPrepare.md` to prepare data.
 >>>  {"--xyz2mol" or "--obabel" or "--indigo" or "--bosolver"} 1>$LOG 2>$ERR
 ```
 
-Refer to `test-onlocal.sh` for an example.
+Refer to `test-onlocal.sh` for an example. (or `oneliner.sh`)
 
 [!NOTE]
 > Performance test for each method can be run asynchronously,
@@ -27,15 +29,18 @@ Refer to `test-onlocal.sh` for an example.
 
 - Preparation for label (SMILES from PubChem)
 
+Run
+
 ```bash
 >>> cd label
 >>> source run_parallel.sh
 ```
 
+`run_parallel.sh` will run `grade_label.py` in parallel.
+
 [!NOTE]
 > Make sure you have proper symbolic link or copied file of
 > "DATA/PubChemQC/name_chg_smi_neutral_sel.woRadicalXXXXXX"
-
 
 3. Run the following codes to analyze the result.
 

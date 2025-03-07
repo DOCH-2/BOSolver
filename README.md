@@ -13,6 +13,8 @@ Thanks to the ILP formulation, BOSolver has multiple strength points such as,
 multiple resonance structures within *definite* time.
 - BOSolver preserves the total charge of the molecule.
 - BOSolver is free from loopholes of heuristics-based methods.
+- BOSolver shows, empirically, stable time complexity
+regardless of cases (worst-case, best-case, and average).
 
 BOSolver relies on `RDKit` for the molecular representation,
 and BOSolver can assign correct bond orders to `RDKit.Chem.Mol` objects
@@ -21,15 +23,13 @@ Read the usage section for more details.
 
 ## Installation
 
-### Conda
-
-Installation via conda is recommended.
-`conda install -c conda-forge bosolver`
-
 ### Pip
 
-Installation via pip (PyPi) is also available, although dependencies,
-including `rdkit`, might not be installed properly.
+Installation via pip (PyPi) is available.
+
+```bash
+>>> pip install BOSolver
+```
 
 ### From source
 

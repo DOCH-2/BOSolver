@@ -1,0 +1,881 @@
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/141293.xyz 0 --xyz2mol
+Error (28000.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/11044.xyz 0 --xyz2mol
+Error (185482.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/264031.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/101282.xyz 0 --xyz2mol
+Error (78048.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/293002.xyz 0 --xyz2mol
+Error (176422.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/231884.xyz 0 --xyz2mol
+Error (117939.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/141931.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/141555.xyz 0 --xyz2mol
+Error (68454.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/233592.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/271114.xyz 0 --xyz2mol
+Error (24434.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/145366.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/125863.xyz 0 --xyz2mol
+[19:03:50] Explicit valence for atom # 5 S, 5, is greater than permitted
+Error (282202.xyz, 0): Python argument types in
+    rdkit.Chem.rdmolops.SanitizeMol(NoneType)
+did not match C++ signature:
+    SanitizeMol(RDKit::ROMol {lvalue} mol, unsigned long sanitizeOps=rdkit.Chem.rdmolops.SanitizeFlags.SANITIZE_ALL, bool catchErrors=False) (type(exc)=<class 'Boost.Python.ArgumentError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/141690.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/133748.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/148110.xyz 0 --xyz2mol
+Error (196034.xyz, 0): conversion failed
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/88647.xyz 0 --xyz2mol
+Error (87015.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (73351.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (25212.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/143712.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/147820.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/108511.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/61818.xyz 0 --xyz2mol
+[19:15:52] Explicit valence for atom # 18 S, 5, is greater than permitted
+Error (265648.xyz, 0): Python argument types in
+    rdkit.Chem.rdmolops.SanitizeMol(NoneType)
+did not match C++ signature:
+    SanitizeMol(RDKit::ROMol {lvalue} mol, unsigned long sanitizeOps=rdkit.Chem.rdmolops.SanitizeFlags.SANITIZE_ALL, bool catchErrors=False) (type(exc)=<class 'Boost.Python.ArgumentError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/141932.xyz 0 --xyz2mol
+Error (130897.xyz, 0): conversion failed
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/277172.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/45432.xyz 0 --xyz2mol
+Error (56280.xyz, 0): conversion failed
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/144914.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/291695.xyz 0 --xyz2mol
+Error (68353.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/86900.xyz 0 --xyz2mol
+Error (120281.xyz, 0): conversion failed
+Error (248629.xyz, 0): conversion failed
+Error (159815.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (24497.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/2584.xyz 0 --xyz2mol
+Error (111919.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/141933.xyz 0 --xyz2mol
+Error (46741.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (62191.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/163739.xyz 0 --xyz2mol
+Error (149151.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (24964.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+[19:36:32] Explicit valence for atom # 3 S, 5, is greater than permitted
+Error (138974.xyz, 0): Python argument types in
+    rdkit.Chem.rdmolops.SanitizeMol(NoneType)
+did not match C++ signature:
+    SanitizeMol(RDKit::ROMol {lvalue} mol, unsigned long sanitizeOps=rdkit.Chem.rdmolops.SanitizeFlags.SANITIZE_ALL, bool catchErrors=False) (type(exc)=<class 'Boost.Python.ArgumentError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/78347.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/143858.xyz 0 --xyz2mol
+Error (123472.xyz, 0): conversion failed
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/279826.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/157689.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/173694.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/253627.xyz 0 --xyz2mol
+Error (28015.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/226547.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/141416.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/101389.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/87467.xyz 0 --xyz2mol
+Error (143684.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (162398.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (58721.xyz, 0): conversion failed
+Error (202025.xyz, 0): conversion failed
+Error (201029.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (24204.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/125864.xyz 0 --xyz2mol
+Error (24441.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/231466.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/164946.xyz 0 --xyz2mol
+Error (154926.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/34321.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/253628.xyz 0 --xyz2mol
+Error (623.xyz, 0): conversion failed
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/64968.xyz 0 --xyz2mol
+Error (34270.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/84655.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/593.xyz 0 --xyz2mol
+Error (167571.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/43707.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/108341.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/99571.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/294848.xyz 0 --xyz2mol
+Error (212892.xyz, 0): conversion failed
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/157845.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/142238.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/254851.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/2245.xyz 0 --xyz2mol
+Error (32731.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/292944.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/148874.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/141414.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/170963.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/269015.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/19459.xyz 0 --xyz2mol
+Error (111432.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (12670.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/2618.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/78785.xyz 0 --xyz2mol
+Error (68467.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (116198.xyz, 0): conversion failed
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/85203.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/276835.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/84244.xyz 0 --xyz2mol
+Error (84445.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (24506.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (10112.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/144917.xyz 0 --xyz2mol
+Error (4873.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (68404.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/119116.xyz 0 --xyz2mol
+Error (80348.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/278873.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/23117.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/193794.xyz 0 --xyz2mol
+Error (156591.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/259736.xyz 0 --xyz2mol
+Error (66369.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/225891.xyz 0 --xyz2mol
+Error (120260.xyz, 0): conversion failed
+Error (211182.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/294070.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/27752.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/33255.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/160352.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/105980.xyz 0 --xyz2mol
+Error (112915.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (79857.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/134231.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/118808.xyz 0 --xyz2mol
+Error (24268.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (14797.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/39226.xyz 0 --xyz2mol
+Error (101830.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (4038.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/4570.xyz 0 --xyz2mol
+Error (26268.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/147429.xyz 0 --xyz2mol
+Error (122707.xyz, 0): conversion failed
+Error (119638.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+[21:40:43] Explicit valence for atom # 4 S, 5, is greater than permitted
+Error (284331.xyz, 0): Python argument types in
+    rdkit.Chem.rdmolops.SanitizeMol(NoneType)
+did not match C++ signature:
+    SanitizeMol(RDKit::ROMol {lvalue} mol, unsigned long sanitizeOps=rdkit.Chem.rdmolops.SanitizeFlags.SANITIZE_ALL, bool catchErrors=False) (type(exc)=<class 'Boost.Python.ArgumentError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (167585.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (170306.xyz, 0): conversion failed
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/267168.xyz 0 --xyz2mol
+Error (173004.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/86507.xyz 0 --xyz2mol
+Error (5235.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/96901.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/269791.xyz 0 --xyz2mol
+Error (8929.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/108119.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/277928.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/77473.xyz 0 --xyz2mol
+Error (5242.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (1459.xyz, 0): conversion failed
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/69780.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/168009.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/6518.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/62844.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/30198.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/143571.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/162744.xyz 0 --xyz2mol
+Error (24104.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/97892.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/87004.xyz 0 --xyz2mol
+Error (81181.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/71961.xyz 0 --xyz2mol
+Error (194308.xyz, 0): conversion failed
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/15757.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/155756.xyz 0 --xyz2mol
+Error (70168.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+[22:21:35] Explicit valence for atom # 4 S, 5, is greater than permitted
+Error (284333.xyz, 0): Python argument types in
+    rdkit.Chem.rdmolops.SanitizeMol(NoneType)
+did not match C++ signature:
+    SanitizeMol(RDKit::ROMol {lvalue} mol, unsigned long sanitizeOps=rdkit.Chem.rdmolops.SanitizeFlags.SANITIZE_ALL, bool catchErrors=False) (type(exc)=<class 'Boost.Python.ArgumentError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/193289.xyz 0 --xyz2mol
+Error (71589.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (177713.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (197147.xyz, 0): conversion failed
+Error (143580.xyz, 0): conversion failed
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/277944.xyz 0 --xyz2mol
+Error (164810.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/157929.xyz 0 --xyz2mol
+Error (24363.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/161279.xyz 0 --xyz2mol
+Error (70533.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/97432.xyz 0 --xyz2mol
+Error (108762.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/61190.xyz 0 --xyz2mol
+Error (73981.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/43960.xyz 0 --xyz2mol
+Error (24507.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (21329.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (166896.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (168060.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (42294.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/24224.xyz 0 --xyz2mol
+Error (24486.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/196415.xyz 0 --xyz2mol
+Error (84512.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (166813.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (1020.xyz, 0): conversion failed
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/100273.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/147430.xyz 0 --xyz2mol
+Error (168139.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (110320.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (114264.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (80138.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (11590.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/141866.xyz 0 --xyz2mol
+Error (13167.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (76148.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/169817.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/228425.xyz 0 --xyz2mol
+Error (101955.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/293270.xyz 0 --xyz2mol
+Error (110575.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (61088.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/141045.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/212363.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/65355.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/150811.xyz 0 --xyz2mol
+Error (78681.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (49391.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (9032.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/289463.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/40601.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/99481.xyz 0 --xyz2mol
+Error (103417.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (108575.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/125865.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/60131.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/134870.xyz 0 --xyz2mol
+Error (37258.xyz, 0): conversion failed
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/191233.xyz 0 --xyz2mol
+Error (179601.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (24384.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/223353.xyz 0 --xyz2mol
+Error (123203.xyz, 0): conversion failed
+Error (122156.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/25603.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/141415.xyz 0 --xyz2mol
+Error (24074.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/123729.xyz 0 --xyz2mol
+Error (165442.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/221425.xyz 0 --xyz2mol
+Error (152528.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/61232.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/97538.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/72245.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/264036.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/144915.xyz 0 --xyz2mol
+Error (96442.xyz, 0): conversion failed
+Error (1301.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (116791.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/507.xyz 0 --xyz2mol
+Error (134734.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/265104.xyz 0 --xyz2mol
+Error (82824.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/257904.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/292971.xyz 0 --xyz2mol
+Error (79999.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/91349.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/177315.xyz 0 --xyz2mol
+Error (26002.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (30182.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (61501.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/95146.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/156443.xyz 0 --xyz2mol
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/167714.xyz 0 --xyz2mol
+Error (40677.xyz, 0): conversion failed
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/148876.xyz 0 --xyz2mol
+Error (90415.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+Error (103917.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.
+parallel: Warning: This job was killed because it timed out:
+parallel: Warning: python -u ../test.py /home/leejinwon/BOSolver/test/performance/DATA/PubChemQC/neutral/22085.xyz 0 --xyz2mol
+Error (159605.xyz, 0): max() arg is an empty sequence (type(exc)=<class 'ValueError'>)
+Traceback (most recent call last):
+  File "/home/leejinwon/BOSolver/test/performance/PubChemQC/../test.py", line 49, in <module>
+    print(name, chg, *check_All(mol, chg), f"{t:.5f}", sep="\t")
+ValueError: I/O operation on closed file.

@@ -161,7 +161,7 @@ def get_ring_info(mol: Chem.Mol):
                               13: [[(12, 13), (13, 0)]]}
     """
     new_z_list = np.array([atom.GetAtomicNum() for atom in mol.GetAtoms()])
-    degree = [atom.GetDegree() for atom in mol.GetAtoms()]
+    degree = np.array([atom.GetDegree() for atom in mol.GetAtoms()])
     new_z_list[degree == 1] = 1  # H
     new_z_list[degree == 2] = 8  # O
     new_z_list[degree == 3] = 7  # N
@@ -176,7 +176,6 @@ def get_ring_info(mol: Chem.Mol):
         new_rd.AddBond(
             b.GetBeginAtomIdx(), b.GetEndAtomIdx(), Chem.rdchem.BondType.SINGLE
         )
-    Chem.SanitizeMol(new_rd)
 
     sssrs = Chem.GetSymmSSSR(new_rd)
     RingInfo = new_rd.GetRingInfo()

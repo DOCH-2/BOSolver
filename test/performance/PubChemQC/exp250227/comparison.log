@@ -1,0 +1,53 @@
+======ChemVal=======
+OBB: 90647       IGX: 93143      X2M: 98993      BOS: 98563
+
+LABEL: 99994
+
+------specific------
+     ChgConserve  NoRadical  Sanitize
+OBB       100000      94133     96514
+IGX        93143      93143     93143
+X2M        99014      98993     99014
+BOS        98565      98565     98563
+
+Unsuccessful (invalid)
+     ChgConserve  NoRadical  Sanitize  invalid
+OBB            0       5867      3486     9353
+IGX            0          0         0        0
+X2M            0         21         0       21
+BOS            0          0         2        2
+
+======ChemStab======
+OBB: 90638       IGX: 92800      X2M: 96589      BOS: 98328
+
+Unsuccessful (valid - chemstab)
+OBB: 9   IGX: 343        X2M: 2404       BOS: 235
+     nOctet  ChgSepa  nAromatic
+OBB   90640    90647      90616
+IGX   92851    93125      93018
+X2M   98981    96494      98193
+BOS   98446    98177      98423
+
+Unsuccessful (valid - chemstab)
+OBB: 9   IGX: 343        X2M: 2404       BOS: 235
+
+------specific------
+     nOctet  ChgSepa  nAromatic
+OBB       7        0         31
+IGX     292       18        125
+X2M      12     2499        800
+BOS     117      386        140
+
+========TIME========
+OBB: 0.00012 ± 0.00033
+IGX: 0.36596 ± 1.93201
+X2M: 0.09511 ± 1.16873
+BOS: 0.17755 ± 0.20798
+
+--LONGER than 10s---
+OBB 0
+IGX 515
+X2M 222
+BOS 0
+
+Time Distribution Plot was saved as time.png
