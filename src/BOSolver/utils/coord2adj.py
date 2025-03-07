@@ -120,9 +120,7 @@ class BaberHodgkin(CovalentRadius):
 
 
 class Simple(CovalentRadius):
-    """Simple Bond Perception Algorithm
-    $ \le \le $
-    """
+    """Simple Bond Perception Algorithm"""
 
     def __init__(self):
         self.relTol = 1.15
